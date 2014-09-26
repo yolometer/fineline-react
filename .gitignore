@@ -1,0 +1,16 @@
+# Ignore node modules
+node_modules/
+
+# Ignore Bower-installed files
+client/public/bower/
+
+# Ignore compiled CSS
+client/public/app/css/compiled/
+
+# Ignore .DS_Store files
+**/.DS_Store
+
+# Ignore emacs temporary files
+**~
+**/#*#
+**/.#*
