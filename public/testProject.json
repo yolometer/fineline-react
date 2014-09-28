@@ -1,0 +1,15 @@
+{
+  "title": "Lance's project",
+  "description": "All the danks, everyday.",
+  "participants": [0,1,2],
+  "tasks": [{
+    "title": "Blaze it",
+    "description": "Smoke marijuana diligently.",
+    "timespans": [["fjksjfke", 2, 1411868575, 1411898575],["tgsesf", 0, 1411768575, 1411758575]]
+  },
+  {
+  	"title": "Actually code decent code",
+  	"description": "Maybe write some docs too.",
+  	"timespans": [["ksejkf", 0, 1411865575,1411866575 ]]
+  }]
+}
