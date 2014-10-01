@@ -137,7 +137,9 @@ var TaskListTask = React.createClass({
 });
 
 function addTask(index) {
-  cats[index].tasks.push({title: window.prompt("Enter a title for your new task.")});
+  var newTitle = window.prompt("Enter a title for your new task.");
+  if(newTitle.length && newTitle.length > 0)
+    cats[index].tasks.push({title: newTitle});
 }
 
 var TaskListCategory = React.createClass({
