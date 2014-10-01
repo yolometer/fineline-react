@@ -71,6 +71,7 @@ var TaskListTask = React.createClass({
   renderList: function() {
     var displayList = new Array();
     displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.fill || taskDefaultColor}));
+    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
     return displayList;
   },
   render: function() {
