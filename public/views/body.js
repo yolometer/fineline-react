@@ -1,6 +1,8 @@
 'use strict';
 var catHeight = 80;
 var catDefaultColor = "#e6e6e6";
+var catDefaultTextColor = "#333333";
+
 
 var taskHeight = 64;
 var taskDefaultColor = "#f2f2f2";
@@ -86,6 +88,10 @@ var TaskListCategory = React.createClass({
     this.props.currentY = this.props.currentY || 0;
 
     displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
+    if(this.props.cat.expanded == true)
+      displayList.push(React.DOM.rect({x: 12, y: this.props.currentY + 36, width: 16, height: 12, fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+    if(this.props.cat.expanded == false)
+      displayList.push(React.DOM.rect({x: 14, y: this.props.currentY + 34, width: 12, height: 16, fill: catDefaultTextColor, onClick: this.toggleExpanded}));
     this.props.currentY += catHeight;
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
