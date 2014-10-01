@@ -84,15 +84,26 @@ var TaskListCategory = React.createClass({
   toggleExpanded: function(){
     toggleCatExpanded(this.props.index);
   },
+  addTask: function() {
+    console.log("Doh, TaskListCategory's addTask function hasn't been implemented.");
+  },
   renderList: function() {
     var displayList = new Array();
     this.props.currentY = this.props.currentY || 0;
 
+    // Category line
     displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
+
+    // Expansion indicator
     if(this.props.cat.expanded == true)
       displayList.push(React.DOM.path({d: 'm 28,' + (this.props.currentY + 36) + ' -16,0 8,12 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
     if(this.props.cat.expanded == false)
       displayList.push(React.DOM.path({d: 'm 14,' + (this.props.currentY + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+
+    // Plus button
+    displayList.push(React.DOM.rect({x: 358, y: this.props.currentY + 24, width: 4, height: 32, fill: catDefaultTextColor}));
+    displayList.push(React.DOM.rect({x: 344, y: this.props.currentY + 38, width: 32, height: 4, fill: catDefaultTextColor}));
+    displayList.push(React.DOM.rect({x: 344, y: this.props.currentY + 24, width: 32, height: 32, opacity: '0', fill: 'black', onClick: this.addTask}));
     this.props.currentY += catHeight;
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
