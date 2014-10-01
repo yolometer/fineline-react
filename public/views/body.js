@@ -10,7 +10,7 @@ var taskDefaultColor = "#f2f2f2";
 var cats = [
   {title: "Development", expanded: true, tasks: [
     {
-      title: "Create and document data and API structures",
+      title: "Create and document data and API \nstructures",
       color: "#bf7294",
       timespans: []
     },
@@ -20,7 +20,7 @@ var cats = [
       timespans: []
     },
     {
-      title: "Build services to synchronize the data",
+      title: "Build services to synchronize the \ndata",
       color: "#72bfaf",
       timespans: []
     },
@@ -31,31 +31,31 @@ var cats = [
   ]},
   {title: "Design", expanded: true, tasks: [
     {
-      title: "Create first-run visual mockups of the project view",
+      title: "Create first-run visual mockups of \nthe project view",
       color: "#bf8372",
       timespans: []
     },
     {
-      title: "Finalize design for MVP, and implement with React",
+      title: "Finalize design for MVP, and \nimplement with React",
       timespans: []
     },
     {
-      title: "Ensure consistency after interactivity is added to the page",
+      title: "Ensure consistency after \ninteractivity is added to the page",
       timespans: []
     },
   ]},
   {title: "Deployment", expanded: false, tasks: [
     {
-      title: "Deploy testing API endpoints to DigitalOcean Droplet",
+      title: "Deploy testing API endpoints to \nDigitalOcean Droplet",
       color: "#8172bf",
       timespans: []
     },
     {
-      title: "Set up DNS records for API, site, and mailer",
+      title: "Set up DNS records for API, site, \nand mailer",
       timespans: []
     },
     {
-      title: "Test stability in production environment",
+      title: "Test stability in production \nenvironment",
       timespans: []
     }
   ]}
@@ -66,12 +66,35 @@ function toggleCatExpanded(index){
   renderBody();
 }
 
+var TaskListTaskTitle = React.createClass({
+  displayName: "TaskListTaskTitle",
+  renderList: function() {
+    var displayList = new Array();
+    var localY = this.props.currentY + 28;
+    this.props.title.split('\n').forEach(function(span, i) {
+      displayList.push(React.DOM.tspan({x: 40, y: localY + (i * 22)}, span));
+    });
+    return displayList;
+  },
+  render: function() {
+    return React.DOM.text({fontSize: '18px', fill: 'white', fontFamily: 'Cantarell', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.currentY + 28}, null, this.renderList());
+  }
+});
+
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
   renderList: function() {
     var displayList = new Array();
-    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.fill || taskDefaultColor}));
+
+    // Task line base
+    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
+
+    // Title area shade
     displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
+
+    // Title
+    displayList.push(TaskListTaskTitle({title: this.props.task.title, currentY: this.props.currentY}));
+
     return displayList;
   },
   render: function() {
@@ -111,7 +134,7 @@ var TaskListCategory = React.createClass({
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
     for (var task in this.props.cat.tasks){
-      displayList.push(TaskListTask({currentY: this.props.currentY, fill: this.props.cat.tasks[task].color}));
+      displayList.push(TaskListTask({currentY: this.props.currentY, task: this.props.cat.tasks[task]}));
       this.props.currentY += taskHeight;
     }
     return {displayList: displayList, currentY: this.props.currentY};
