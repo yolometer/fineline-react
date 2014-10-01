@@ -122,13 +122,12 @@ var TaskListTask = React.createClass({
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
     if(!this.props.task.started) {
       displayList.push(React.DOM.path({d: 'm 352,' + (this.props.currentY + 20) + ' 0,24 18,-12 z', fill: playPauseColor}));
-      displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 22, height: 24, fill: 'black', opacity: 0, onClick: this.playPause}));
     }
     if(this.props.task.started == true) {
       displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
       displayList.push(React.DOM.rect({x: 364, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
-      displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 22, height: 24, fill: 'black', opacity: 0, onClick: this.playPause}));
     }
+    displayList.push(React.DOM.rect({x: 337, y: (this.props.currentY + 8), width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.playPause}));
     return displayList;
   },
   render: function() {
@@ -171,7 +170,7 @@ var TaskListCategory = React.createClass({
     // Plus button
     displayList.push(React.DOM.rect({x: 358, y: this.props.currentY + 24, width: 4, height: 32, fill: catDefaultTextColor}));
     displayList.push(React.DOM.rect({x: 344, y: this.props.currentY + 38, width: 32, height: 4, fill: catDefaultTextColor}));
-    displayList.push(React.DOM.rect({x: 344, y: this.props.currentY + 24, width: 32, height: 32, opacity: '0', fill: 'black', onClick: this.addTask}));
+    displayList.push(React.DOM.rect({x: 328, y: this.props.currentY + 8, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.addTask}));
     this.props.currentY += catHeight;
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
