@@ -64,40 +64,53 @@ function toggleCatExpanded(index){
   renderBody();
 }
 
+var TaskListTask = React.createClass({
+  displayName: "TaskListTask",
+  renderList: function() {
+    var displayList = new Array();
+    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.fill || taskDefaultColor}));
+    return displayList;
+  },
+  render: function() {
+    return React.DOM.g({}, null, this.renderList());
+  }
+});
+
 var TaskListCategory = React.createClass({
   displayName: "TaskListCategory",
   toggleExpanded: function(){
     toggleCatExpanded(this.props.index);
   },
   renderList: function() {
-    var taskList = new Array();
+    var displayList = new Array();
     this.props.currentY = this.props.currentY || 0;
 
-    taskList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
+    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
     this.props.currentY += catHeight;
     if(this.props.cat.expanded == false)
-      return {taskList: taskList, currentY: this.props.currentY};
+      return {displayList: displayList, currentY: this.props.currentY};
     for (var task in this.props.cat.tasks){
-      taskList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.cat.tasks[task].color || taskDefaultColor}));
+      displayList.push(TaskListTask({currentY: this.props.currentY, fill: this.props.cat.tasks[task].color}));
       this.props.currentY += taskHeight;
     }
-    return {taskList: taskList, currentY: this.props.currentY};
+    return {displayList: displayList, currentY: this.props.currentY};
   },
   render: function() {
     var list = this.renderList();
-    return React.DOM.g({}, null, list.taskList);
-  }
+    return React.DOM.g({}, null, list.displayList);
+ }
 });
 
 var TaskList = React.createClass({
+  displayName: "TaskList",
   renderList: function() {
-    var taskList = new Array();
+    var displayList = new Array();
     var currentY = 0;
     for (var cat in this.props.cats) {
-      taskList.push(TaskListCategory({currentY: currentY, cat: this.props.cats[cat], index: cat}));
+      displayList.push(TaskListCategory({currentY: currentY, cat: this.props.cats[cat], index: cat}));
       currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
     }
-    return {taskList: taskList, currentY: currentY};
+    return {displayList: displayList, currentY: currentY};
   },
   render: function() {
     var list = this.renderList();
@@ -106,7 +119,7 @@ var TaskList = React.createClass({
       width: window.innerWidth,
       height: list.currentY,
       version: "1.1"
-    }, null, list.taskList);
+    }, null, list.displayList);
   }
 });
 
