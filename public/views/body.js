@@ -86,7 +86,7 @@ function togglePlayPause(catIndex, taskIndex) {
   if(!cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = true;
     if(!cats[catIndex].tasks[taskIndex].color) {
-      cats[catIndex].tasks[taskIndex].color = Please.make_color({format: 'hex'});
+      cats[catIndex].tasks[taskIndex].color = Please.make_color();
     }
     renderBody();
     return;
@@ -137,8 +137,10 @@ var TaskListTask = React.createClass({
 
 function addTask(index) {
   var newTitle = window.prompt("Enter a title for your new task.");
-  if(newTitle.length && newTitle.length > 0)
+  if(newTitle && newTitle.length && newTitle.length > 0) {
     cats[index].tasks.push({title: newTitle});
+    renderBody();
+  }
 }
 
 var TaskListCategory = React.createClass({
