@@ -117,6 +117,7 @@ var TaskList = React.createClass({
       displayList.push(TaskListCategory({currentY: currentY, cat: this.props.cats[cat], index: cat}));
       currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
     }
+    displayList.push(React.DOM.rect({x: 396, y: 0, width: 4, height: currentY, opacity: 0.4, fill: "black"}));
     return {displayList: displayList, currentY: currentY};
   },
   render: function() {
