@@ -43,7 +43,7 @@ var cats = [
     {
       title: "Ensure consistency after \ninteractivity is added to the page",
       timespans: []
-    },
+    }
   ]},
   {title: "Deployment", expanded: false, tasks: [
     {
@@ -82,12 +82,28 @@ var TaskListTaskTitle = React.createClass({
   }
 });
 
+function togglePlayPause(catIndex, taskIndex) {
+  if(!cats[catIndex].tasks[taskIndex].started) {
+    cats[catIndex].tasks[taskIndex].started = true;
+    if(!cats[catIndex].tasks[taskIndex].color) {
+      cats[catIndex].tasks[taskIndex].color = Please.make_color({format: 'hex'});
+    }
+    renderBody();
+    return;
+  }
+  if(cats[catIndex].tasks[taskIndex].started) {
+    cats[catIndex].tasks[taskIndex].started = false;
+    renderBody();
+    return;
+  }
+}
+
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
   playPause: function() {
     var thisFunction = {parent: "TaskListTask", name: "playPause"};
     console.log("Doh, " + thisFunction.parent + "'s " + thisFunction.name + " function is not yet implemented.");
-
+    togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
   renderList: function() {
     var displayList = new Array();
@@ -104,9 +120,11 @@ var TaskListTask = React.createClass({
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
-    if(!this.props.task.started)
-      displayList.push(React.DOM.path({d: 'm 352,' + (this.props.currentY + 20) + ' 0,24 18,-12 z', fill: playPauseColor, onClick: this.playPause}));
-    if(this.props.task.started) {
+    if(!this.props.task.started) {
+      displayList.push(React.DOM.path({d: 'm 352,' + (this.props.currentY + 20) + ' 0,24 18,-12 z', fill: playPauseColor}));
+      displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 22, height: 24, fill: 'black', opacity: 0, onClick: this.playPause}));
+    }
+    if(this.props.task.started == true) {
       displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
       displayList.push(React.DOM.rect({x: 364, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
       displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 22, height: 24, fill: 'black', opacity: 0, onClick: this.playPause}));
@@ -151,7 +169,7 @@ var TaskListCategory = React.createClass({
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
     for (var task in this.props.cat.tasks){
-      displayList.push(TaskListTask({currentY: this.props.currentY, task: this.props.cat.tasks[task]}));
+      displayList.push(TaskListTask({currentY: this.props.currentY, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
       this.props.currentY += taskHeight;
     }
     return {displayList: displayList, currentY: this.props.currentY};
