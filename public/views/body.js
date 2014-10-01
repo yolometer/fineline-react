@@ -77,7 +77,7 @@ var TaskListTaskTitle = React.createClass({
     return displayList;
   },
   render: function() {
-    return React.DOM.text({fontSize: '18px', fill: 'white', fontFamily: 'Cantarell', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.currentY + 28}, null, this.renderList());
+    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.currentY + 28}, null, this.renderList());
   }
 });
 
@@ -90,10 +90,11 @@ var TaskListTask = React.createClass({
     displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
 
     // Title area shade
-    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
+    if(this.props.task.color)
+      displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
 
     // Title
-    displayList.push(TaskListTaskTitle({title: this.props.task.title, currentY: this.props.currentY}));
+    displayList.push(TaskListTaskTitle({title: this.props.task.title, currentY: this.props.currentY, color: this.props.task.color}));
 
     return displayList;
   },
