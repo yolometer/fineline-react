@@ -159,7 +159,7 @@ var TaskListCategory = React.createClass({
   render: function() {
     var list = this.renderList();
     return React.DOM.g({}, null, list.displayList);
- }
+  }
 });
 
 var TaskList = React.createClass({
@@ -199,7 +199,7 @@ function renderBody() {
 
 
 window.onresize = function (){
-	renderBody();
-}
+  renderBody();
+};
 
 renderBody();
