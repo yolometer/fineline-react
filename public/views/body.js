@@ -89,9 +89,9 @@ var TaskListCategory = React.createClass({
 
     displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
     if(this.props.cat.expanded == true)
-      displayList.push(React.DOM.path({d: 'm 28,' + (this.props.currentY + 36) + ' -16,0 8,12 z', x: 12, y: this.props.currentY + 36, width: 16, height: 12, fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+      displayList.push(React.DOM.path({d: 'm 28,' + (this.props.currentY + 36) + ' -16,0 8,12 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
     if(this.props.cat.expanded == false)
-      displayList.push(React.DOM.path({d: 'm 14,' + (this.props.currentY + 34) + ' 0,16 12,-8 z', x: 12, y: this.props.currentY + 36, width: 16, height: 12, fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+      displayList.push(React.DOM.path({d: 'm 14,' + (this.props.currentY + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
     this.props.currentY += catHeight;
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
