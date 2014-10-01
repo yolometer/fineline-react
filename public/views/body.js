@@ -136,6 +136,10 @@ var TaskListTask = React.createClass({
   }
 });
 
+function addTask(index) {
+  cats[index].tasks.push({title: window.prompt("Enter a title for your new task.")});
+}
+
 var TaskListCategory = React.createClass({
   displayName: "TaskListCategory",
   toggleExpanded: function(){
@@ -144,6 +148,7 @@ var TaskListCategory = React.createClass({
   addTask: function() {
     var thisFunction = {parent: "TaskListCategory", name: "addTask"};
     console.log("Doh, " + thisFunction.parent + "'s " + thisFunction.name + " function is not yet implemented.");
+    addTask(this.props.index);
   },
   renderList: function() {
     var displayList = new Array();
