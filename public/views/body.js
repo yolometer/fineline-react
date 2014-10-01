@@ -17,6 +17,7 @@ var cats = [
     {
       title: "Set up major API routes",
       color: "#a7bf72",
+      started: true,
       timespans: []
     },
     {
@@ -83,6 +84,11 @@ var TaskListTaskTitle = React.createClass({
 
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
+  playPause: function() {
+    var thisFunction = {parent: "TaskListTask", name: "playPause"};
+    console.log("Doh, " + thisFunction.parent + "'s " + thisFunction.name + " function is not yet implemented.");
+
+  },
   renderList: function() {
     var displayList = new Array();
 
@@ -96,6 +102,15 @@ var TaskListTask = React.createClass({
     // Title
     displayList.push(TaskListTaskTitle({title: this.props.task.title, currentY: this.props.currentY, color: this.props.task.color}));
 
+    // Play/Pause button
+    var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
+    if(!this.props.task.started)
+      displayList.push(React.DOM.path({d: 'm 352,' + (this.props.currentY + 20) + ' 0,24 18,-12 z', fill: playPauseColor, onClick: this.playPause}));
+    if(this.props.task.started) {
+      displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
+      displayList.push(React.DOM.rect({x: 364, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
+      displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 22, height: 24, fill: 'black', opacity: 0, onClick: this.playPause}));
+    }
     return displayList;
   },
   render: function() {
@@ -109,7 +124,8 @@ var TaskListCategory = React.createClass({
     toggleCatExpanded(this.props.index);
   },
   addTask: function() {
-    console.log("Doh, TaskListCategory's addTask function hasn't been implemented.");
+    var thisFunction = {parent: "TaskListCategory", name: "addTask"};
+    console.log("Doh, " + thisFunction.parent + "'s " + thisFunction.name + " function is not yet implemented.");
   },
   renderList: function() {
     var displayList = new Array();
