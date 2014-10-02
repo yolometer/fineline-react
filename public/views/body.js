@@ -193,10 +193,12 @@ var TaskListCategory = React.createClass({
     displayList.push(React.DOM.text({x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Cantarell, Sans'}, this.props.cat.title));
 
     // Expansion indicator
-    if(this.props.cat.expanded == true)
+    if(this.props.cat.expanded) {
       displayList.push(React.DOM.path({d: 'm 28,' + (this.props.y + 36) + ' -16,0 8,12 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
-    if(this.props.cat.expanded == false)
+    }
+    if(!this.props.cat.expanded) {
       displayList.push(React.DOM.path({d: 'm 14,' + (this.props.y + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+    }
 
     // Plus button
     displayList.push(new PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
@@ -206,10 +208,11 @@ var TaskListCategory = React.createClass({
 
     this.props.y += catHeight;
 
-    if(this.props.cat.expanded != false)
-    for (var task in this.props.cat.tasks){
-      displayList.push(new TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
-      this.props.y += taskHeight;
+    if(this.props.cat.expanded) {
+      for (var task in this.props.cat.tasks){
+        displayList.push(new TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
+        this.props.y += taskHeight;
+      }
     }
 
     return React.DOM.g({}, null, displayList);
@@ -226,8 +229,9 @@ var TaskList = React.createClass({
       currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
     }
 
-    if(currentY < window.innerHeight)
+    if(currentY < window.innerHeight) {
       currentY = window.innerHeight;
+    }
 
     // Task list separator line
     displayList.push(React.DOM.rect({x: 396, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
