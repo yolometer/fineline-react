@@ -173,6 +173,11 @@ var TaskListCategory = React.createClass({
     displayList.push(React.DOM.rect({x: 358, y: this.props.currentY + 24, width: 4, height: 32, fill: catDefaultTextColor}));
     displayList.push(React.DOM.rect({x: 344, y: this.props.currentY + 38, width: 32, height: 4, fill: catDefaultTextColor}));
     displayList.push(React.DOM.rect({x: 328, y: this.props.currentY + 8, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.addTask}));
+
+    // TOTAL label
+    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.currentY + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", textAnchor: 'end'}, '3:00'));
+    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.currentY + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, ' TOTAL'));
+
     this.props.currentY += catHeight;
     if(this.props.cat.expanded == false)
       return {displayList: displayList, currentY: this.props.currentY};
