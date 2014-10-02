@@ -71,14 +71,14 @@ var TaskListTaskTitle = React.createClass({
   displayName: "TaskListTaskTitle",
   renderList: function() {
     var displayList = new Array();
-    var localY = this.props.currentY + 28;
+    var localY = this.props.y + 28;
     this.props.title.split('\n').forEach(function(span, i) {
       displayList.push(React.DOM.tspan({x: 40, y: localY + (i * 22)}, span));
     });
     return displayList;
   },
   render: function() {
-    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.currentY + 28}, null, this.renderList());
+    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, this.renderList());
   }
 });
 
@@ -109,25 +109,25 @@ var TaskListTask = React.createClass({
     var displayList = new Array();
 
     // Task line base
-    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
+    displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
 
     // Title area shade
     if(this.props.task.color)
-      displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
 
     // Title
-    displayList.push(TaskListTaskTitle({title: this.props.task.title, currentY: this.props.currentY, color: this.props.task.color}));
+    displayList.push(TaskListTaskTitle({title: this.props.task.title, y: this.props.y, color: this.props.task.color}));
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
     if(!this.props.task.started) {
-      displayList.push(React.DOM.path({d: 'm 352,' + (this.props.currentY + 20) + ' 0,24 18,-12 z', fill: playPauseColor}));
+      displayList.push(React.DOM.path({d: 'm 352,' + (this.props.y + 20) + ' 0,24 18,-12 z', fill: playPauseColor}));
     }
     if(this.props.task.started == true) {
-      displayList.push(React.DOM.rect({x: 350, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
-      displayList.push(React.DOM.rect({x: 364, y: (this.props.currentY + 20), width: 8, height: 24, fill: playPauseColor}));
+      displayList.push(React.DOM.rect({x: 350, y: (this.props.y + 20), width: 8, height: 24, fill: playPauseColor}));
+      displayList.push(React.DOM.rect({x: 364, y: (this.props.y + 20), width: 8, height: 24, fill: playPauseColor}));
     }
-    displayList.push(React.DOM.rect({x: 337, y: (this.props.currentY + 8), width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.playPause}));
+    displayList.push(React.DOM.rect({x: 337, y: (this.props.y + 8), width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.playPause}));
     return displayList;
   },
   render: function() {
@@ -155,41 +155,40 @@ var TaskListCategory = React.createClass({
   },
   renderList: function() {
     var displayList = new Array();
-    this.props.currentY = this.props.currentY || 0;
+    this.props.y = this.props.y || 0;
 
     // Category line
-    displayList.push(React.DOM.rect({x: 0, y: this.props.currentY, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
+    displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
 
     // Category heading
-    displayList.push(React.DOM.text({x: 40, y: this.props.currentY + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Cantarell, Sans'}, this.props.cat.title));
+    displayList.push(React.DOM.text({x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Cantarell, Sans'}, this.props.cat.title));
 
     // Expansion indicator
     if(this.props.cat.expanded == true)
-      displayList.push(React.DOM.path({d: 'm 28,' + (this.props.currentY + 36) + ' -16,0 8,12 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+      displayList.push(React.DOM.path({d: 'm 28,' + (this.props.y + 36) + ' -16,0 8,12 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
     if(this.props.cat.expanded == false)
-      displayList.push(React.DOM.path({d: 'm 14,' + (this.props.currentY + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
+      displayList.push(React.DOM.path({d: 'm 14,' + (this.props.y + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
 
     // Plus button
-    displayList.push(React.DOM.rect({x: 358, y: this.props.currentY + 24, width: 4, height: 32, fill: catDefaultTextColor}));
-    displayList.push(React.DOM.rect({x: 344, y: this.props.currentY + 38, width: 32, height: 4, fill: catDefaultTextColor}));
-    displayList.push(React.DOM.rect({x: 328, y: this.props.currentY + 8, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.addTask}));
+    displayList.push(React.DOM.rect({x: 358, y: this.props.y + 24, width: 4, height: 32, fill: catDefaultTextColor}));
+    displayList.push(React.DOM.rect({x: 344, y: this.props.y + 38, width: 32, height: 4, fill: catDefaultTextColor}));
+    displayList.push(React.DOM.rect({x: 328, y: this.props.y + 8, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.addTask}));
 
     // TOTAL label
-    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.currentY + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", textAnchor: 'end'}, '3:00'));
-    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.currentY + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, ' TOTAL'));
+    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", textAnchor: 'end'}, '3:00'));
+    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, ' TOTAL'));
 
-    this.props.currentY += catHeight;
+    this.props.y += catHeight;
     if(this.props.cat.expanded == false)
-      return {displayList: displayList, currentY: this.props.currentY};
+      return displayList;
     for (var task in this.props.cat.tasks){
-      displayList.push(TaskListTask({currentY: this.props.currentY, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
-      this.props.currentY += taskHeight;
+      displayList.push(TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
+      this.props.y += taskHeight;
     }
-    return {displayList: displayList, currentY: this.props.currentY};
+    return displayList;
   },
   render: function() {
-    var list = this.renderList();
-    return React.DOM.g({}, null, list.displayList);
+    return React.DOM.g({}, null, this.renderList());
   }
 });
 
@@ -199,7 +198,7 @@ var TaskList = React.createClass({
     var displayList = new Array();
     var currentY = 0;
     for (var cat in this.props.cats) {
-      displayList.push(TaskListCategory({currentY: currentY, cat: this.props.cats[cat], index: cat}));
+      displayList.push(TaskListCategory({y: currentY, cat: this.props.cats[cat], index: cat}));
       currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
     }
 
