@@ -172,6 +172,19 @@ function addTask(index) {
   }
 }
 
+var ExpansionIndicator = React.createClass({
+  displayName: "ExpansionIndicator",
+  render: function (){
+    if(this.props.expanded) {
+      return React.DOM.path({d: 'm ' + (this.props.x + 14) + ',' + (this.props.y + 2) + ' -16,0 8,12 z', fill: this.props.fill, onClick: this.props.onClick});
+    }
+    if(!this.props.expanded) {
+      return React.DOM.path({d: 'm ' + this.props.x + ',' + this.props.y + ' 0,16 12,-8 z', fill: this.props.fill, onClick: this.props.onClick});
+    }
+    return null;
+  }
+});
+
 var TaskListCategory = React.createClass({
   displayName: "TaskListCategory",
   toggleExpanded: function(){
@@ -193,12 +206,7 @@ var TaskListCategory = React.createClass({
     displayList.push(React.DOM.text({x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Cantarell, Sans'}, this.props.cat.title));
 
     // Expansion indicator
-    if(this.props.cat.expanded) {
-      displayList.push(React.DOM.path({d: 'm 28,' + (this.props.y + 36) + ' -16,0 8,12 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
-    }
-    if(!this.props.cat.expanded) {
-      displayList.push(React.DOM.path({d: 'm 14,' + (this.props.y + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
-    }
+    displayList.push(new ExpansionIndicator({x: 14,  y: (this.props.y + 34), fill: catDefaultTextColor, expanded: this.props.cat.expanded, onClick: this.toggleExpanded}));
 
     // Plus button
     displayList.push(new PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
