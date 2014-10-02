@@ -82,6 +82,26 @@ var TaskListTaskTitle = React.createClass({
   }
 });
 
+
+var PlayPauseButton = React.createClass({
+  displayName: "PlayPauseButton",
+  renderList: function () {
+    var displayList = [];
+    if(!this.props.started) {
+      displayList.push(React.DOM.path({d: 'm ' + (this.props.x + 15) + ',' + (this.props.y + 12) + ' 0,24 18,-12 z', fill: this.props.fill}));
+    }
+    if(this.props.started) {
+      displayList.push(React.DOM.rect({x: (this.props.x + 13), y: (this.props.y + 12), width: 8, height: 24, fill: this.props.fill}));
+      displayList.push(React.DOM.rect({x: (this.props.x + 27), y: (this.props.y + 12), width: 8, height: 24, fill: this.props.fill}));
+    }
+    displayList.push(React.DOM.rect({x: this.props.x, y: this.props.y, width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.props.onClick}));
+    return displayList;
+  },
+  render: function () {
+    return React.DOM.g({}, null, this.renderList());
+  }
+});
+
 function togglePlayPause(catIndex, taskIndex) {
   if(!cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = true;
@@ -120,14 +140,8 @@ var TaskListTask = React.createClass({
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
-    if(!this.props.task.started) {
-      displayList.push(React.DOM.path({d: 'm 352,' + (this.props.y + 20) + ' 0,24 18,-12 z', fill: playPauseColor}));
-    }
-    if(this.props.task.started == true) {
-      displayList.push(React.DOM.rect({x: 350, y: (this.props.y + 20), width: 8, height: 24, fill: playPauseColor}));
-      displayList.push(React.DOM.rect({x: 364, y: (this.props.y + 20), width: 8, height: 24, fill: playPauseColor}));
-    }
-    displayList.push(React.DOM.rect({x: 337, y: (this.props.y + 8), width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.playPause}));
+    displayList.push(PlayPauseButton({x: 337, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
+
     return displayList;
   },
   render: function() {
