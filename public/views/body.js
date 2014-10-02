@@ -70,7 +70,7 @@ function toggleCatExpanded(index){
 var TaskListTaskTitle = React.createClass({
   displayName: "TaskListTaskTitle",
   render: function() {
-    var displayList = new Array();
+    var displayList = [];
     var localY = this.props.y + 28;
     this.props.title.split('\n').forEach(function(span, i) {
       displayList.push(React.DOM.tspan({x: 40, y: localY + (i * 22)}, span));
@@ -120,7 +120,7 @@ var TaskListTask = React.createClass({
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
   render: function() {
-    var displayList = new Array();
+    var displayList = [];
 
     // Task line base
     displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
@@ -183,7 +183,7 @@ var TaskListCategory = React.createClass({
     addTask(this.props.index);
   },
   render: function() {
-    var displayList = new Array();
+    var displayList = [];
     this.props.y = this.props.y || 0;
 
     // Category line
@@ -219,7 +219,7 @@ var TaskListCategory = React.createClass({
 var TaskList = React.createClass({
   displayName: "TaskList",
   render: function() {
-    var displayList = new Array();
+    var displayList = [];
     var currentY = 0;
     for (var cat in this.props.cats) {
       displayList.push(TaskListCategory({y: currentY, cat: this.props.cats[cat], index: cat}));
