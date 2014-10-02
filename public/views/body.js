@@ -149,6 +149,36 @@ var TaskListTask = React.createClass({
   }
 });
 
+var TwoWayLabel = React.createClass({
+  displayName: "TwoWayLabel",
+  renderList: function () {
+    var displayList = [];
+
+    displayList.push(React.DOM.text({x: this.props.x, y: this.props.y, fill: this.props.fill, fontSize: this.props.fontSize, fontStyle: this.props.fontStyle, fontFamily: this.props.fontFamily, textAnchor: 'end'}, this.props.leftText));
+    displayList.push(React.DOM.text({x: this.props.x, y: this.props.y, fill: this.props.fill, fontSize: this.props.fontSize, fontStyle: this.props.fontStyle, fontFamily: this.props.fontFamily}, ' ' + this.props.rightText));
+
+    return displayList;
+  },
+  render: function () {
+    return React.DOM.g({}, null, this.renderList());
+  }
+});
+
+var PlusButton = React.createClass({
+  displayName: "PlusButton",
+  renderList: function () {
+    var displayList = [];
+    displayList.push(React.DOM.rect({x: (this.props.x + 30), y: this.props.y + 16, width: 4, height: 32, fill: this.props.fill}));
+    displayList.push(React.DOM.rect({x: (this.props.x + 16), y: this.props.y + 30, width: 32, height: 4, fill: this.props.fill}));
+    displayList.push(React.DOM.rect({x: this.props.x, y: this.props.y, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.props.onClick}));
+
+    return displayList;
+  },
+  render: function () {
+    return React.DOM.g({}, null, this.renderList());
+  }
+});
+
 function addTask(index) {
   var newTitle = window.prompt("Enter a title for your new task.");
   if(newTitle && newTitle.length && newTitle.length > 0) {
@@ -184,13 +214,10 @@ var TaskListCategory = React.createClass({
       displayList.push(React.DOM.path({d: 'm 14,' + (this.props.y + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
 
     // Plus button
-    displayList.push(React.DOM.rect({x: 358, y: this.props.y + 24, width: 4, height: 32, fill: catDefaultTextColor}));
-    displayList.push(React.DOM.rect({x: 344, y: this.props.y + 38, width: 32, height: 4, fill: catDefaultTextColor}));
-    displayList.push(React.DOM.rect({x: 328, y: this.props.y + 8, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.addTask}));
+    displayList.push(PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
-    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", textAnchor: 'end'}, '3:00'));
-    displayList.push(React.DOM.text({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, ' TOTAL'));
+    displayList.push(TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
 
     this.props.y += catHeight;
     if(this.props.cat.expanded == false)
