@@ -209,9 +209,11 @@ var TaskListCategory = React.createClass({
     this.props.y += catHeight;
 
     if(this.props.cat.expanded) {
-      for (var task in this.props.cat.tasks){
-        displayList.push(new TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
-        this.props.y += taskHeight;
+      for (var task in this.props.cat.tasks) {
+        if(this.props.cat.tasks[task].title) {
+          displayList.push(new TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
+          this.props.y += taskHeight;
+        }
       }
     }
 
@@ -224,9 +226,12 @@ var TaskList = React.createClass({
   render: function() {
     var displayList = [];
     var currentY = 0;
+
     for (var cat in this.props.cats) {
-      displayList.push(new TaskListCategory({y: currentY, cat: this.props.cats[cat], index: cat}));
-      currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
+      if(this.props.cats[cat].title) {
+        displayList.push(new TaskListCategory({y: currentY, cat: this.props.cats[cat], index: cat}));
+        currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
+      }
     }
 
     if(currentY < window.innerHeight) {
