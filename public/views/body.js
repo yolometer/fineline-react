@@ -130,11 +130,11 @@ var TaskListTask = React.createClass({
       displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
     }
     // Title
-    displayList.push(TaskListTaskTitle({title: this.props.task.title, y: this.props.y, color: this.props.task.color}));
+    displayList.push(new TaskListTaskTitle({title: this.props.task.title, y: this.props.y, color: this.props.task.color}));
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
-    displayList.push(PlayPauseButton({x: 337, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
+    displayList.push(new PlayPauseButton({x: 337, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -199,16 +199,16 @@ var TaskListCategory = React.createClass({
       displayList.push(React.DOM.path({d: 'm 14,' + (this.props.y + 34) + ' 0,16 12,-8 z', fill: catDefaultTextColor, onClick: this.toggleExpanded}));
 
     // Plus button
-    displayList.push(PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
+    displayList.push(new PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
-    displayList.push(TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
+    displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
 
     this.props.y += catHeight;
 
     if(this.props.cat.expanded != false)
     for (var task in this.props.cat.tasks){
-      displayList.push(TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
+      displayList.push(new TaskListTask({y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index}));
       this.props.y += taskHeight;
     }
 
@@ -222,7 +222,7 @@ var TaskList = React.createClass({
     var displayList = [];
     var currentY = 0;
     for (var cat in this.props.cats) {
-      displayList.push(TaskListCategory({y: currentY, cat: this.props.cats[cat], index: cat}));
+      displayList.push(new TaskListCategory({y: currentY, cat: this.props.cats[cat], index: cat}));
       currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
     }
 
@@ -244,7 +244,7 @@ var TaskList = React.createClass({
 });
 
 function renderBody() {
-  React.renderComponent(TaskList({cats: cats}), document.body);
+  React.renderComponent(new TaskList({cats: cats}), document.body);
 }
 
 
