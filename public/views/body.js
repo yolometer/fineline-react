@@ -12,18 +12,18 @@ var cats = [
     {
       title: "Create and document data and API \nstructures",
       color: "#bf7294",
-      timespans: []
+      timespans: [[1, Date.now() - (45 * 60), (Date.now() - (45 * 60)) + 20]]
     },
     {
       title: "Set up major API routes",
       color: "#a7bf72",
       started: true,
-      timespans: []
+      timespans: [[1, Date.now() - (15 * 60)]]
     },
     {
       title: "Build services to synchronize the \ndata",
       color: "#72bfaf",
-      timespans: []
+      timespans: [[1, Date.now() - ((45 * 60) + (3 * 60 * 60)), Date.now() - (45 * 60)]]
     },
     {
       title: "Build services to format the data",
@@ -34,7 +34,7 @@ var cats = [
     {
       title: "Create first-run visual mockups of \nthe project view",
       color: "#bf8372",
-      timespans: []
+      timespans: [[1, Date.now() - (6 * 60 * 60), Date.now() - (5 * 60 * 60)]]
     },
     {
       title: "Finalize design for MVP, and \nimplement with React",
@@ -49,7 +49,7 @@ var cats = [
     {
       title: "Deploy testing API endpoints to \nDigitalOcean Droplet",
       color: "#8172bf",
-      timespans: []
+      timespans: [[2, Date.now() - ((30 * 60) + (1 * 60 * 60)), Date.now() - (1 * 60 * 60)]]
     },
     {
       title: "Set up DNS records for API, site, \nand mailer",
