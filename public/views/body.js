@@ -154,7 +154,7 @@ var TaskEndColumn = React.createClass({
         timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
       });
       var formattedSum = ((Math.floor(timespanSum / 60 / 60) % 24)? ((Math.floor(timespanSum / 60 / 60) % 24) + ':'): '') + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
-      displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 43, fill: 'white', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: formattedSum, rightText: (this.props.started)?"ON IT": "DONE"}));
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: formattedSum, rightText: (this.props.started)?"ON IT": "DONE"}));
     } else {
       displayList.push(React.DOM.text({x: window.innerWidth - 190, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, "UNSTARTED"));
     }
@@ -199,10 +199,11 @@ var TaskListTask = React.createClass({
     var displayList = [];
 
     // Task line base
-    displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
+    displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: taskHeight, fill: taskDefaultColor}));
 
     // Title area shade
     if(this.props.task.color) {
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, fill: this.props.task.color}));
       displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
     }
     // Title
@@ -216,7 +217,7 @@ var TaskListTask = React.createClass({
     displayList.push(new TaskEndColumn({timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started}));
 
     // Time spans
-    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: taskHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.15, timespans: this.props.task.timespans}));
+    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: taskHeight, width: (window.innerWidth - (206 + 396)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.timespans}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -297,14 +298,15 @@ var TaskListCategory = React.createClass({
     displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
 
     // Time spans
-    var timespans = [];
-    this.props.cat.tasks.forEach(function(task) {
-      task.timespans.forEach(function(span) {
-        timespans.push(span);
+    if (!this.props.cat.expanded) {
+      var timespans = [];
+      this.props.cat.tasks.forEach(function(task) {
+        task.timespans.forEach(function(span) {
+          timespans.push(span);
+        });
       });
-    });
-    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
-
+      displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
+    }
     this.props.y += catHeight;
 
     if(this.props.cat.expanded) {
@@ -338,7 +340,7 @@ var TaskList = React.createClass({
     }
 
     // Task list separator line
-    displayList.push(React.DOM.rect({x: 396, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
+    displayList.push(React.DOM.rect({x: 394, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
 
     // “NOW” line
     displayList.push(React.DOM.path({d: 'm ' + (window.innerWidth - 206) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
