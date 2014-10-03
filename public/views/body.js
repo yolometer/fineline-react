@@ -181,7 +181,7 @@ var TimeSpans = React.createClass({
         if(startX < props.x) {
           startX = props.x;
         }
-        displayList.push(React.DOM.rect({x: startX, y: props.y, width: endX - startX, height: props.height, opacity: props.opacity, fill: props.fill}));
+        displayList.push(React.DOM.rect({x: startX, y: props.y, width: endX - startX, height: props.height, opacity: props.opacity, fill: props.fill, onClick: props.onClick}));
       }
     });
     return React.DOM.g({}, null, displayList);
@@ -303,7 +303,7 @@ var TaskListCategory = React.createClass({
         timespans.push(span);
       });
     });
-    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans}));
+    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
 
     this.props.y += catHeight;
 
