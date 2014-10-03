@@ -247,7 +247,7 @@ var PlusButton = React.createClass({
 function addTask(index) {
   var newTitle = window.prompt("Enter a title for your new task.");
   if(newTitle && newTitle.length && newTitle.length > 0) {
-    cats[index].tasks.push({title: newTitle});
+    cats[index].tasks.push({title: newTitle, timespans: []});
     renderBody();
   }
 }
