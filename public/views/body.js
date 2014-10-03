@@ -142,6 +142,13 @@ function zeroPad(num, numZeros) {
 }
 
 
+function sumFormatSpans(spans){
+  var timespanSum = 0;
+  spans.forEach(function(span) {
+    timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
+  });
+  return zeroPad(Math.floor(timespanSum / 60 / 60) % 24, 2) + ':' + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
+}
 
 var TaskEndColumn = React.createClass({
   displayName: "TaskEndColumn",
@@ -149,14 +156,10 @@ var TaskEndColumn = React.createClass({
     var displayList = [];
 
     if(this.props.timespans.length > 0) {
-      var timespanSum = 0;
-      this.props.timespans.forEach(function(span) {
-        timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
-      });
-      var formattedSum = ((Math.floor(timespanSum / 60 / 60) % 24)? ((Math.floor(timespanSum / 60 / 60) % 24) + ':'): '') + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
-      displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: formattedSum, rightText: (this.props.started)?"ON IT": "DONE"}));
+      var formattedSum = sumFormatSpans(this.props.timespans);
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: formattedSum, rightText: ''}));
     } else {
-      displayList.push(React.DOM.text({x: window.innerWidth - 190, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, "UNSTARTED"));
+      displayList.push(React.DOM.text({x: window.innerWidth - 193, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "", fontFamily: "Roboto"}, "UNSTARTED"));
     }
 
     return React.DOM.g({}, null, displayList);
@@ -295,16 +298,16 @@ var TaskListCategory = React.createClass({
     displayList.push(new PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
-    displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
+    var timespans = [];
+    this.props.cat.tasks.forEach(function(task) {
+      task.timespans.forEach(function(span) {
+        timespans.push(span);
+      });
+    });
+    displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Roboto", leftText: sumFormatSpans(timespans), rightText: ''}));
 
     // Time spans
     if (!this.props.cat.expanded) {
-      var timespans = [];
-      this.props.cat.tasks.forEach(function(task) {
-        task.timespans.forEach(function(span) {
-          timespans.push(span);
-        });
-      });
       displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
     }
     this.props.y += catHeight;
