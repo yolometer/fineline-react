@@ -5,6 +5,9 @@ var catDefaultTextColor = "#333333";
 var testUid = 1;
 
 
+var pixelsPerMinute = 15;
+var timescale = pixelsPerMinute / 60;
+
 
 var taskHeight = 64;
 var taskDefaultColor = "#f2f2f2";
@@ -158,6 +161,31 @@ var TaskEndColumn = React.createClass({
   }
 });
 
+function projectTime(time, x, width){
+  return (width - ((now - time) * timescale)) + x;
+}
+
+var TimeSpans = React.createClass({
+  displayName: "TimeSpans",
+  render: function() {
+    var displayList = [];
+    var right = this.props.x + this.props.width;
+    var props = this.props;
+    this.props.timespans.forEach(function(span){
+      var startX = projectTime(span[1], props.x, props.width);
+      var endX = span[2]? projectTime(span[2], props.x, props.width): props.x + props.width;
+
+      if(endX > props.x) {
+        if(startX < props.x) {
+          startX = props.x;
+        }
+        displayList.push(React.DOM.rect({x: startX, y: props.y, width: endX - startX, height: props.height, opacity: props.opacity, fill: props.fill}));
+      }
+    });
+    return React.DOM.g({}, null, displayList);
+  }
+});
+
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
   playPause: function() {
@@ -184,6 +212,9 @@ var TaskListTask = React.createClass({
 
     // Time Column
     displayList.push(new TaskEndColumn({timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started}));
+
+    // Time spans
+    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: taskHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.15, timespans: this.props.task.timespans}));
 
     return React.DOM.g({}, null, displayList);
   }
