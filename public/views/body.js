@@ -150,7 +150,10 @@ var TaskEndColumn = React.createClass({
       });
       var formattedSum = ((Math.floor(timespanSum / 60 / 60) % 24)? ((Math.floor(timespanSum / 60 / 60) % 24) + ':'): '') + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
       displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 43, fill: 'white', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: formattedSum, rightText: (this.props.started)?"ON IT": "DONE"}));
+    } else {
+      displayList.push(React.DOM.text({x: window.innerWidth - 190, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, "UNSTARTED"));
     }
+
     return React.DOM.g({}, null, displayList);
   }
 });
