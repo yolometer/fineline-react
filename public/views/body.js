@@ -141,6 +141,8 @@ function zeroPad(num, numZeros) {
   return zeroString+n;
 }
 
+
+
 var TaskEndColumn = React.createClass({
   displayName: "TaskEndColumn",
   render: function () {
@@ -293,6 +295,15 @@ var TaskListCategory = React.createClass({
 
     // TOTAL label
     displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
+
+    // Time spans
+    var timespans = [];
+    this.props.cat.tasks.forEach(function(task) {
+      task.timespans.forEach(function(span) {
+        timespans.push(span);
+      });
+    });
+    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans}));
 
     this.props.y += catHeight;
 
