@@ -2,28 +2,31 @@
 var catHeight = 80;
 var catDefaultColor = "#e6e6e6";
 var catDefaultTextColor = "#333333";
+var testUid = 1;
+
 
 
 var taskHeight = 64;
 var taskDefaultColor = "#f2f2f2";
+var now = Math.floor(Date.now() / 1000);
+
 
 var cats = [
   {title: "Development", expanded: true, tasks: [
     {
       title: "Create and document data and API \nstructures",
       color: "#bf7294",
-      timespans: [[1, Date.now() - (45 * 60), (Date.now() - (45 * 60)) + 20]]
+      timespans: [[1, now - (45 * 60), (now - (45 * 60)) + (20 * 60)]]
     },
     {
       title: "Set up major API routes",
       color: "#a7bf72",
-      started: true,
-      timespans: [[1, Date.now() - (15 * 60)]]
+      timespans: [[1, now - (15 * 60)]]
     },
     {
       title: "Build services to synchronize the \ndata",
       color: "#72bfaf",
-      timespans: [[1, Date.now() - ((45 * 60) + (3 * 60 * 60)), Date.now() - (45 * 60)]]
+      timespans: [[1, now - ((45 * 60) + (3 * 60 * 60)), now - (45 * 60)]]
     },
     {
       title: "Build services to format the data",
@@ -34,7 +37,7 @@ var cats = [
     {
       title: "Create first-run visual mockups of \nthe project view",
       color: "#bf8372",
-      timespans: [[1, Date.now() - (6 * 60 * 60), Date.now() - (5 * 60 * 60)]]
+      timespans: [[1, now - (6 * 60 * 60), now - (5 * 60 * 60)]]
     },
     {
       title: "Finalize design for MVP, and \nimplement with React",
@@ -49,7 +52,7 @@ var cats = [
     {
       title: "Deploy testing API endpoints to \nDigitalOcean Droplet",
       color: "#8172bf",
-      timespans: [[2, Date.now() - ((30 * 60) + (1 * 60 * 60)), Date.now() - (1 * 60 * 60)]]
+      timespans: [[2, now - ((30 * 60) + (1 * 60 * 60)), now - (1 * 60 * 60)]]
     },
     {
       title: "Set up DNS records for API, site, \nand mailer",
@@ -61,6 +64,16 @@ var cats = [
     }
   ]}
 ];
+
+cats = cats.map(function (cat){
+  cat.tasks = cat.tasks.map(function(task) {
+    if(task.timespans.length && !task.timespans[task.timespans.length - 1][2]) {
+      task.started = true;
+    }
+    return task;
+  });
+  return cat;
+});
 
 function toggleCatExpanded(index){
   cats[index].expanded = !cats[index].expanded;
@@ -102,15 +115,45 @@ function togglePlayPause(catIndex, taskIndex) {
     if(!cats[catIndex].tasks[taskIndex].color) {
       cats[catIndex].tasks[taskIndex].color = Please.make_color();
     }
+    cats[catIndex].tasks[taskIndex].timespans.push([testUid, now]);
     renderBody();
     return;
   }
   if(cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = false;
+    cats[catIndex].tasks[taskIndex].timespans[cats[catIndex].tasks[taskIndex].timespans.length - 1][2] = now;
     renderBody();
     return;
   }
 }
+
+function zeroPad(num, numZeros) {
+  var n = Math.abs(num);
+  var zeros = Math.max(0, numZeros - Math.floor(n).toString().length );
+  var zeroString = Math.pow(10,zeros).toString().substr(1);
+  if( num < 0 ) {
+    zeroString = '-' + zeroString;
+  }
+
+  return zeroString+n;
+}
+
+var TaskEndColumn = React.createClass({
+  displayName: "TaskEndColumn",
+  render: function () {
+    var displayList = [];
+
+    if(this.props.timespans.length > 0) {
+      var timespanSum = 0;
+      this.props.timespans.forEach(function(span) {
+        timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
+      });
+      var formattedSum = ((Math.floor(timespanSum / 60 / 60) % 24)? ((Math.floor(timespanSum / 60 / 60) % 24) + ':'): '') + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 43, fill: 'white', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: formattedSum, rightText: (this.props.started)?"ON IT": "DONE"}));
+    }
+    return React.DOM.g({}, null, displayList);
+  }
+});
 
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
@@ -135,6 +178,9 @@ var TaskListTask = React.createClass({
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
     displayList.push(new PlayPauseButton({x: 337, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
+
+    // Time Column
+    displayList.push(new TaskEndColumn({timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -261,12 +307,12 @@ var TaskList = React.createClass({
 });
 
 function renderBody() {
+  now = Math.floor(Date.now() / 1000);
   React.renderComponent(new TaskList({cats: cats}), document.body);
 }
 
 
-window.onresize = function (){
-  renderBody();
-};
+window.onresize = renderBody;
+window.setInterval(renderBody, 1000);
 
 renderBody();
