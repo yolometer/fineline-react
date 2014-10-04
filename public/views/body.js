@@ -22,7 +22,7 @@ var now = Math.floor(Date.now() / 1000);
 var cats = [
   {title: "Development", expanded: true, tasks: [
     {
-      title: "Create and document data and API \nstructures",
+      title: "Create and document data and API structures",
       color: "#bf7294",
       timespans: [[1, now - (45 * 60), (now - (45 * 60)) + (20 * 60)]]
     },
@@ -32,7 +32,7 @@ var cats = [
       timespans: [[1, now - (15 * 60)]]
     },
     {
-      title: "Build services to synchronize the \ndata",
+      title: "Build services to synchronize the data",
       color: "#72bfaf",
       timespans: [[1, now - ((45 * 60) + (3 * 60 * 60)), now - (45 * 60)]]
     },
@@ -43,31 +43,31 @@ var cats = [
   ]},
   {title: "Design", expanded: true, tasks: [
     {
-      title: "Create first-run visual mockups of \nthe project view",
+      title: "Create first-run visual mockups of the project view",
       color: "#bf8372",
       timespans: [[1, now - (6 * 60 * 60), now - (5 * 60 * 60)]]
     },
     {
-      title: "Finalize design for MVP, and \nimplement with React",
+      title: "Finalize design for MVP, and implement with React",
       timespans: []
     },
     {
-      title: "Ensure consistency after \ninteractivity is added to the page",
+      title: "Ensure consistency after interactivity is added to the page",
       timespans: []
     }
   ]},
   {title: "Deployment", expanded: false, tasks: [
     {
-      title: "Deploy testing API endpoints to \nDigitalOcean Droplet",
+      title: "Deploy testing API endpoints to DigitalOcean Droplet",
       color: "#8172bf",
       timespans: [[2, now - ((30 * 60) + (1 * 60 * 60)), now - (1 * 60 * 60)]]
     },
     {
-      title: "Set up DNS records for API, site, \nand mailer",
+      title: "Set up DNS records for API, site, and mailer",
       timespans: []
     },
     {
-      title: "Test stability in production \nenvironment",
+      title: "Test stability in production environment",
       timespans: []
     }
   ]}
@@ -93,9 +93,18 @@ var TaskListTaskTitle = React.createClass({
   render: function() {
     var displayList = [];
     var localY = this.props.y + 28;
-    this.props.title.split('\n').forEach(function(span, i) {
-      displayList.push(React.DOM.tspan({x: 40, y: localY + (i * 22)}, span));
+    var accum = '';
+
+    this.props.title.split(' ').forEach(function (t) {
+      if((accum.length + t.length) < 35) {
+        accum += t + ' ';
+      } else {
+        displayList.push(React.DOM.tspan({x: 40, y: localY + (displayList.length * 22)}, accum));
+        accum = t + ' ';
+      }
     });
+    displayList.push(React.DOM.tspan({x: 40, y: localY + (displayList.length * 22)}, accum));
+
     return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, displayList);
   }
 });
