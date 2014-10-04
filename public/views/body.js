@@ -161,9 +161,9 @@ var TaskEndColumn = React.createClass({
     var displayList = [];
 
     if(this.props.timespans.length > 0) {
-      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: sumFormatSpans(this.props.timespans), rightText: ''}));
+      displayList.push(new TimeLabel({x: window.innerWidth - (nowLineOffset / 2), y: this.props.y + 43, text: sumFormatSpans(this.props.timespans)}));
     } else {
-      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: '00:00', rightText: ''}));
+      displayList.push(new TimeLabel({x: window.innerWidth - (nowLineOffset / 2), y: this.props.y + 43, fill: '#CCCCCC', text: '00:00'}));
     }
 
     return React.DOM.g({}, null, displayList);
@@ -230,15 +230,10 @@ var TaskListTask = React.createClass({
   }
 });
 
-var TwoWayLabel = React.createClass({
-  displayName: "TwoWayLabel",
+var TimeLabel = React.createClass({
+  displayName: "TimeLabel",
   render: function () {
-    var displayList = [];
-
-    displayList.push(React.DOM.tspan({x: this.props.x, y: this.props.y, fill: this.props.fill, fontSize: this.props.fontSize, fontStyle: this.props.fontStyle, fontFamily: this.props.fontFamily, textAnchor: 'end'}, this.props.leftText));
-    displayList.push(React.DOM.tspan({x: this.props.x, y: this.props.y, fill: this.props.fill, fontSize: this.props.fontSize, fontStyle: this.props.fontStyle, fontFamily: this.props.fontFamily}, ' ' + this.props.rightText));
-
-    return React.DOM.text({}, null, displayList);
+    return React.DOM.text({x: this.props.x, y: this.props.y, fill: this.props.fill || catDefaultTextColor, fontSize: this.props.fontSize || 32, fontFamily: this.props.fontFamily || "Roboto", textAnchor: 'middle'}, this.props.text);
   }
 });
 
@@ -308,7 +303,7 @@ var TaskListCategory = React.createClass({
         timespans.push(span);
       });
     });
-    displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Roboto", leftText: sumFormatSpans(timespans), rightText: ''}));
+    displayList.push(new TimeLabel({x: window.innerWidth - (nowLineOffset / 2), y: this.props.y + 56, text: sumFormatSpans(timespans)}));
 
     // Time spans
     if (!this.props.cat.expanded) {
@@ -365,8 +360,18 @@ function renderBody() {
   React.renderComponent(new TaskList({cats: cats}), document.body);
 }
 
+function renderLoop() {
+  window.setTimeout(function () {
+    window.requestAnimationFrame(renderLoop);
+  }, max(16, (1 / timescale) * 500));
+  renderBody();
+}
+
+function max(a, b) {
+  return a > b? a: b;
+}
 
 window.onresize = renderBody;
-window.setInterval(renderBody, 1000);
 
-renderBody();
+
+renderLoop();
