@@ -3,7 +3,7 @@ var catHeight = 80;
 var catDefaultColor = "#e6e6e6";
 var catDefaultTextColor = "#333333";
 
-var nowLineOffset = 140;
+var nowLineOffset = 120;
 var taskListWidth = 396;
 
 
