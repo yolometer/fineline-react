@@ -2,6 +2,11 @@
 var catHeight = 80;
 var catDefaultColor = "#e6e6e6";
 var catDefaultTextColor = "#333333";
+
+var nowLineOffset = 140;
+var taskListWidth = 396;
+
+
 var testUid = 1;
 
 
@@ -142,6 +147,13 @@ function zeroPad(num, numZeros) {
 }
 
 
+function sumFormatSpans(spans){
+  var timespanSum = 0;
+  spans.forEach(function(span) {
+    timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
+  });
+  return zeroPad(Math.floor(timespanSum / 60 / 60) % 24, 2) + ':' + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
+}
 
 var TaskEndColumn = React.createClass({
   displayName: "TaskEndColumn",
@@ -149,14 +161,9 @@ var TaskEndColumn = React.createClass({
     var displayList = [];
 
     if(this.props.timespans.length > 0) {
-      var timespanSum = 0;
-      this.props.timespans.forEach(function(span) {
-        timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
-      });
-      var formattedSum = ((Math.floor(timespanSum / 60 / 60) % 24)? ((Math.floor(timespanSum / 60 / 60) % 24) + ':'): '') + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
-      displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 43, fill: 'white', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: formattedSum, rightText: (this.props.started)?"ON IT": "DONE"}));
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: sumFormatSpans(this.props.timespans), rightText: ''}));
     } else {
-      displayList.push(React.DOM.text({x: window.innerWidth - 190, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight"}, "UNSTARTED"));
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: '00:00', rightText: ''}));
     }
 
     return React.DOM.g({}, null, displayList);
@@ -199,11 +206,12 @@ var TaskListTask = React.createClass({
     var displayList = [];
 
     // Task line base
-    displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: taskHeight, fill: this.props.task.color || taskDefaultColor}));
+    displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: window.innerWidth, height: taskHeight, fill: taskDefaultColor}));
 
     // Title area shade
     if(this.props.task.color) {
-      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.color}));
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, opacity: 0.15, fill: "black"}));
     }
     // Title
     displayList.push(new TaskListTaskTitle({title: this.props.task.title, y: this.props.y, color: this.props.task.color}));
@@ -216,7 +224,7 @@ var TaskListTask = React.createClass({
     displayList.push(new TaskEndColumn({timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started}));
 
     // Time spans
-    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: taskHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.15, timespans: this.props.task.timespans}));
+    displayList.push(new TimeSpans({x: taskListWidth, y: this.props.y, height: taskHeight, width: (window.innerWidth - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.timespans}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -294,17 +302,18 @@ var TaskListCategory = React.createClass({
     displayList.push(new PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
-    displayList.push(new TwoWayLabel({x: window.innerWidth - 122, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Interstate ExtraLight", leftText: "3:00", rightText: "TOTAL"}));
-
-    // Time spans
     var timespans = [];
     this.props.cat.tasks.forEach(function(task) {
       task.timespans.forEach(function(span) {
         timespans.push(span);
       });
     });
-    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
+    displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 56, fill: catDefaultTextColor, fontSize: 32, fontStyle: "Italic", fontFamily: "Roboto", leftText: sumFormatSpans(timespans), rightText: ''}));
 
+    // Time spans
+    if (!this.props.cat.expanded) {
+      displayList.push(new TimeSpans({x: taskListWidth, y: this.props.y, height: catHeight, width: (window.innerWidth - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
+    }
     this.props.y += catHeight;
 
     if(this.props.cat.expanded) {
@@ -338,10 +347,10 @@ var TaskList = React.createClass({
     }
 
     // Task list separator line
-    displayList.push(React.DOM.rect({x: 396, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
+    displayList.push(React.DOM.rect({x: taskListWidth - 2, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
 
     // “NOW” line
-    displayList.push(React.DOM.path({d: 'm ' + (window.innerWidth - 206) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
+    displayList.push(React.DOM.path({d: 'm ' + (window.innerWidth - nowLineOffset) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
     return React.DOM.svg({
       xmlns: "http://www.w3.org/2000/svg",
       width: window.innerWidth,
