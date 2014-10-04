@@ -92,18 +92,20 @@ var TaskListTaskTitle = React.createClass({
   displayName: "TaskListTaskTitle",
   render: function() {
     var displayList = [];
+    var localX = this.props.x;
     var localY = this.props.y + 28;
+    var chars = (35 / 290) * (this.props.width || 290);
     var accum = '';
 
     this.props.title.split(' ').forEach(function (t) {
-      if((accum.length + t.length) < 35) {
+      if((accum.length + t.length) < chars) {
         accum += t + ' ';
       } else {
-        displayList.push(React.DOM.tspan({x: 40, y: localY + (displayList.length * 22)}, accum));
+        displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
         accum = t + ' ';
       }
     });
-    displayList.push(React.DOM.tspan({x: 40, y: localY + (displayList.length * 22)}, accum));
+    displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
 
     return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, displayList);
   }
@@ -207,8 +209,6 @@ var TimeSpans = React.createClass({
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
   playPause: function() {
-    var thisFunction = {parent: "TaskListTask", name: "playPause"};
-    console.log("Doh, " + thisFunction.parent + "'s " + thisFunction.name + " function is not yet implemented.");
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
   render: function() {
@@ -223,7 +223,7 @@ var TaskListTask = React.createClass({
       displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, opacity: 0.15, fill: "black"}));
     }
     // Title
-    displayList.push(new TaskListTaskTitle({title: this.props.task.title, y: this.props.y, color: this.props.task.color}));
+    displayList.push(new TaskListTaskTitle({title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
@@ -285,8 +285,6 @@ var TaskListCategory = React.createClass({
     toggleCatExpanded(this.props.index);
   },
   addTask: function() {
-    var thisFunction = {parent: "TaskListCategory", name: "addTask"};
-    console.log("Doh, " + thisFunction.parent + "'s " + thisFunction.name + " function is not yet implemented.");
     addTask(this.props.index);
   },
   render: function() {
