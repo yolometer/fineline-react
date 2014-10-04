@@ -218,7 +218,7 @@ var TaskListTask = React.createClass({
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
-    displayList.push(new PlayPauseButton({x: 337, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
+    displayList.push(new PlayPauseButton({x: taskListWidth - 59, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
 
     // Time Column
     displayList.push(new TaskEndColumn({timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started}));
@@ -294,7 +294,7 @@ var TaskListCategory = React.createClass({
     displayList.push(new ExpansionIndicator({x: 14,  y: (this.props.y + 34), fill: catDefaultTextColor, expanded: this.props.cat.expanded, onClick: this.toggleExpanded}));
 
     // Plus button
-    displayList.push(new PlusButton({x: 328, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
+    displayList.push(new PlusButton({x: taskListWidth - 68, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
     var timespans = [];
