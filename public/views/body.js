@@ -2,6 +2,11 @@
 var catHeight = 80;
 var catDefaultColor = "#e6e6e6";
 var catDefaultTextColor = "#333333";
+
+var nowLineOffset = 140;
+var taskListWidth = 396;
+
+
 var testUid = 1;
 
 
@@ -156,10 +161,9 @@ var TaskEndColumn = React.createClass({
     var displayList = [];
 
     if(this.props.timespans.length > 0) {
-      var formattedSum = sumFormatSpans(this.props.timespans);
-      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: formattedSum, rightText: ''}));
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: catDefaultTextColor, fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: sumFormatSpans(this.props.timespans), rightText: ''}));
     } else {
-      displayList.push(React.DOM.text({x: window.innerWidth - 193, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "", fontFamily: "Roboto"}, "UNSTARTED"));
+      displayList.push(new TwoWayLabel({x: window.innerWidth - 30, y: this.props.y + 43, fill: '#CCCCCC', fontSize: 32, fontStyle: "", fontFamily: "Roboto", leftText: '00:00', rightText: ''}));
     }
 
     return React.DOM.g({}, null, displayList);
@@ -206,8 +210,8 @@ var TaskListTask = React.createClass({
 
     // Title area shade
     if(this.props.task.color) {
-      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, fill: this.props.task.color}));
-      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: 396, height: taskHeight, opacity: 0.15, fill: "black"}));
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.color}));
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, opacity: 0.15, fill: "black"}));
     }
     // Title
     displayList.push(new TaskListTaskTitle({title: this.props.task.title, y: this.props.y, color: this.props.task.color}));
@@ -220,7 +224,7 @@ var TaskListTask = React.createClass({
     displayList.push(new TaskEndColumn({timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started}));
 
     // Time spans
-    displayList.push(new TimeSpans({x: 396, y: this.props.y, height: taskHeight, width: (window.innerWidth - (206 + 396)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.timespans}));
+    displayList.push(new TimeSpans({x: taskListWidth, y: this.props.y, height: taskHeight, width: (window.innerWidth - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.timespans}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -308,7 +312,7 @@ var TaskListCategory = React.createClass({
 
     // Time spans
     if (!this.props.cat.expanded) {
-      displayList.push(new TimeSpans({x: 396, y: this.props.y, height: catHeight, width: (window.innerWidth - (206 + 396)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
+      displayList.push(new TimeSpans({x: taskListWidth, y: this.props.y, height: catHeight, width: (window.innerWidth - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
     }
     this.props.y += catHeight;
 
@@ -343,10 +347,10 @@ var TaskList = React.createClass({
     }
 
     // Task list separator line
-    displayList.push(React.DOM.rect({x: 394, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
+    displayList.push(React.DOM.rect({x: taskListWidth - 2, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
 
     // “NOW” line
-    displayList.push(React.DOM.path({d: 'm ' + (window.innerWidth - 206) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
+    displayList.push(React.DOM.path({d: 'm ' + (window.innerWidth - nowLineOffset) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
     return React.DOM.svg({
       xmlns: "http://www.w3.org/2000/svg",
       width: window.innerWidth,
