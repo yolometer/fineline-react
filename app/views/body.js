@@ -119,7 +119,7 @@ var TaskListTaskTitle = React.createClass({
     if(displayList.length < maxlines) {
       displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
     }
-    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, displayList);
+    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Roboto, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, displayList);
   }
 });
 
@@ -307,7 +307,7 @@ var TaskListCategory = React.createClass({
     displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: this.props.right, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
 
     // Category heading
-    displayList.push(React.DOM.text({x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Cantarell, Sans'}, this.props.cat.title));
+    displayList.push(React.DOM.text({x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Roboto, Sans'}, this.props.cat.title));
 
     // Expansion indicator
     displayList.push(new ExpansionIndicator({x: 14,  y: (this.props.y + 34), fill: catDefaultTextColor, expanded: this.props.cat.expanded, onClick: this.toggleExpanded}));

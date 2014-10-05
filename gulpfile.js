@@ -11,10 +11,11 @@ var indexhtml = ['./app/index.html'];
 
 gulp.task('dev', function () {
   gulp.watch(jsfiles, ['scripts']);
+  gulp.watch(indexhtml, ['dev_html']);
 });
 
 gulp.task('prod', function () {
-  gulp.watch(jsfiles, ['compress']);
+  gulp.watch(jsfiles.concat(indexhtml), ['prod_html']);
 });
 
 gulp.task('dev_html', function () {
@@ -25,7 +26,7 @@ gulp.task('dev_html', function () {
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('prod_html', function () {
+gulp.task('prod_html', ['compress'], function () {
   gulp.src(indexhtml)
     .pipe(inlinesource('./public'))
     .pipe(gulp.dest('./public'));
