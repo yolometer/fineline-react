@@ -95,18 +95,25 @@ var TaskListTaskTitle = React.createClass({
     var localX = this.props.x;
     var localY = this.props.y + 28;
     var chars = (35 / 290) * (this.props.width || 290);
+    var maxlines = this.props.maxLines || 2;
     var accum = '';
 
     this.props.title.split(' ').forEach(function (t) {
       if((accum.length + t.length) < chars) {
         accum += t + ' ';
       } else {
-        displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
-        accum = t + ' ';
+        if(displayList.length == (maxlines - 1)){
+          accum = accum.substr(0, accum.length - 2) + '…';
+        }
+        if(displayList.length < maxlines) {
+          displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
+          accum = t + ' ';
+        }
       }
     });
-    displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
-
+    if(displayList.length < maxlines) {
+      displayList.push(React.DOM.tspan({x: localX, y: localY + (displayList.length * 22)}, accum));
+    }
     return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Cantarell, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, displayList);
   }
 });
