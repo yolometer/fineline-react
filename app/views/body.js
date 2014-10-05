@@ -152,7 +152,7 @@ function togglePlayPause(catIndex, taskIndex) {
   }
   if(cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = false;
-    cats[catIndex].tasks[taskIndex].timespans[cats[catIndex].tasks[taskIndex].timespans.length - 1][2] = now;
+    cats[catIndex].tasks[taskIndex].timespans[cats[catIndex].tasks[taskIndex].timespans.length - 1][2] = Math.floor(now);
     renderBody();
     return;
   }
@@ -385,23 +385,20 @@ var TaskList = React.createClass({
 
 
 function renderBody() {
-  now = Math.floor(Date.now() / 1000);
+  now = Date.now() / 1000;
   React.renderComponent(new TaskList({cats: cats, width: window.innerWidth}), document.body);
 }
 
 function renderLoop() {
   window.setTimeout(function () {
     window.requestAnimationFrame(renderLoop);
-  }, max(16, (1 / timescale) * 500));
+  }, (1 / timescale) * 500);
   renderBody();
   localStorage.cats = JSON.stringify(cats);
 }
 
-function max(a, b) {
-  return a > b? a: b;
-}
-
-window.onresize = renderBody;
-
+window.onresize = function () {
+  window.requestAnimationFrame(renderBody);
+};
 
 renderLoop();
