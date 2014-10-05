@@ -144,7 +144,7 @@ function togglePlayPause(catIndex, taskIndex) {
   if(!cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = true;
     if(!cats[catIndex].tasks[taskIndex].color) {
-      cats[catIndex].tasks[taskIndex].color = Please.make_color();
+      cats[catIndex].tasks[taskIndex].color = Please.make_color()[0];
     }
     cats[catIndex].tasks[taskIndex].timespans.push([testUid, now]);
     renderBody();
@@ -218,6 +218,15 @@ var TimeSpans = React.createClass({
   }
 });
 
+function multiplyHexComponent(component, mult) {
+  return Math.round((parseInt(component, 16)) * 0.85).toString(16);
+}
+
+function multiplyHexString(hex, mult) {
+  return '#' + multiplyHexComponent(hex.substr(1,2), mult) + multiplyHexComponent(hex.substr(3,2), mult) + multiplyHexComponent(hex.substr(5,2), mult);
+}
+
+
 var TaskListTask = React.createClass({
   displayName: "TaskListTask",
   playPause: function() {
@@ -231,8 +240,8 @@ var TaskListTask = React.createClass({
 
     // Title area shade
     if(this.props.task.color) {
-      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.color}));
-      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, opacity: 0.15, fill: "black"}));
+      // Multiply color with 0.85 to produce the color shaded by 0.15
+      displayList.push(React.DOM.rect({x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: multiplyHexString(this.props.task.color, 0.85)}));
     }
     // Title
     displayList.push(new TaskListTaskTitle({title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
