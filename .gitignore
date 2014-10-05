@@ -4,6 +4,9 @@ node_modules/
 # Ignore Bower-installed files
 public/bower/
 
+# Ignore concatenated JavaScript
+public/js/
+
 # Ignore compiled CSS, currently we don't compile, so keep this commented out.
 # public/css/
 
