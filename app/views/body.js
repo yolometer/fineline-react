@@ -17,70 +17,76 @@ var taskHeight = 64;
 var taskDefaultColor = "#f2f2f2";
 var now = Math.floor(Date.now() / 1000);
 
+var cats = [];
 
-var cats = [
-  {title: "Development", expanded: true, tasks: [
-    {
-      title: "Create and document data and API structures",
-      color: "#bf7294",
-      timespans: [[1, now - (45 * 60), (now - (45 * 60)) + (20 * 60)]]
-    },
-    {
-      title: "Set up major API routes",
-      color: "#a7bf72",
-      timespans: [[1, now - (15 * 60)]]
-    },
-    {
-      title: "Build services to synchronize the data",
-      color: "#72bfaf",
-      timespans: [[1, now - ((45 * 60) + (3 * 60 * 60)), now - (45 * 60)]]
-    },
-    {
-      title: "Build services to format the data",
-      timespans: []
-    }
-  ]},
-  {title: "Design", expanded: true, tasks: [
-    {
-      title: "Create first-run visual mockups of the project view",
-      color: "#bf8372",
-      timespans: [[1, now - (6 * 60 * 60), now - (5 * 60 * 60)]]
-    },
-    {
-      title: "Finalize design for MVP, and implement with React",
-      timespans: []
-    },
-    {
-      title: "Ensure consistency after interactivity is added to the page",
-      timespans: []
-    }
-  ]},
-  {title: "Deployment", expanded: false, tasks: [
-    {
-      title: "Deploy testing API endpoints to DigitalOcean Droplet",
-      color: "#8172bf",
-      timespans: [[2, now - ((30 * 60) + (1 * 60 * 60)), now - (1 * 60 * 60)]]
-    },
-    {
-      title: "Set up DNS records for API, site, and mailer",
-      timespans: []
-    },
-    {
-      title: "Test stability in production environment",
-      timespans: []
-    }
-  ]}
-];
+if(!localStorage.cats) {
+  cats = [
+    {title: "Development", expanded: true, tasks: [
+      {
+        title: "Create and document data and API structures",
+        color: "#bf7294",
+        timespans: [[1, now - (45 * 60), (now - (45 * 60)) + (20 * 60)]]
+      },
+      {
+        title: "Set up major API routes",
+        color: "#a7bf72",
+        timespans: [[1, now - (15 * 60)]]
+      },
+      {
+        title: "Build services to synchronize the data",
+        color: "#72bfaf",
+        timespans: [[1, now - ((45 * 60) + (3 * 60 * 60)), now - (45 * 60)]]
+      },
+      {
+        title: "Build services to format the data",
+        timespans: []
+      }
+    ]},
+    {title: "Design", expanded: true, tasks: [
+      {
+        title: "Create first-run visual mockups of the project view",
+        color: "#bf8372",
+        timespans: [[1, now - (6 * 60 * 60), now - (5 * 60 * 60)]]
+      },
+      {
+        title: "Finalize design for MVP, and implement with React",
+        timespans: []
+      },
+      {
+        title: "Ensure consistency after interactivity is added to the page",
+        timespans: []
+      }
+    ]},
+    {title: "Deployment", expanded: false, tasks: [
+      {
+        title: "Deploy testing API endpoints to DigitalOcean Droplet",
+        color: "#8172bf",
+        timespans: [[2, now - ((30 * 60) + (1 * 60 * 60)), now - (1 * 60 * 60)]]
+      },
+      {
+        title: "Set up DNS records for API, site, and mailer",
+        timespans: []
+      },
+      {
+        title: "Test stability in production environment",
+        timespans: []
+      }
+    ]}
+  ];
 
-cats = cats.map(function (cat){
-  cat.tasks = cat.tasks.map(function(task) {
-    if(task.timespans.length && !task.timespans[task.timespans.length - 1][2]) {
-      task.started = true;
-    }
-    return task;
+  cats = cats.map(function (cat){
+    cat.tasks = cat.tasks.map(function(task) {
+      if(task.timespans.length && !task.timespans[task.timespans.length - 1][2]) {
+        task.started = true;
+      }
+      return task;
+    });
+    return cat;
   });
-  return cat;
-});
+  localStorage.cats = JSON.stringify(cats);
+}
+
+cats = JSON.parse(localStorage.cats);
 
 function toggleCatExpanded(index){
   cats[index].expanded = !cats[index].expanded;
@@ -379,6 +385,7 @@ function renderLoop() {
     window.requestAnimationFrame(renderLoop);
   }, max(16, (1 / timescale) * 500));
   renderBody();
+  localStorage.cats = JSON.stringify(cats);
 }
 
 function max(a, b) {
