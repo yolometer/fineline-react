@@ -1,0 +1,22 @@
+{
+  "name": "fineline-react",
+  "version": "0.0.0",
+  "description": "ReactJS-based client for fineline.",
+  "dependencies": {
+    "gulp": "^3.8.8",
+    "gulp-concat": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/finelineworks/fineline-react"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/finelineworks/fineline-react/issues"
+  },
+  "homepage": "https://github.com/finelineworks/fineline-react"
+}
