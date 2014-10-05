@@ -1,12 +1,27 @@
-var gulp = require('gulp')
+var gulp = require('gulp');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+
+
+var jsfiles = ['./app/views/*.js', './app/providers/*.js'];
 
 gulp.task('dev', function () {
-  gulp.watch(['./app/views/*.js', './app/providers/*.js'], ['scripts']);
+  gulp.watch(jsfiles, ['scripts']);
+});
+
+gulp.task('prod', function () {
+  gulp.watch(jsfiles, ['compress']);
 });
 
 gulp.task('scripts', function() {
-  gulp.src(['./app/views/*.js', './app/providers/*.js'])
+  gulp.src(jsfiles)
     .pipe(concat('app.js'))
-    .pipe(gulp.dest('./public/js'))
+    .pipe(gulp.dest('./public/js'));
+});
+
+gulp.task('compress', function() {
+  gulp.src(jsfiles)
+    .pipe(concat('app.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('./public/js'));
 });

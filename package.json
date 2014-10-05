@@ -4,11 +4,11 @@
   "description": "ReactJS-based client for fineline.",
   "dependencies": {
     "gulp": "~3.8.x",
-    "gulp-concat": "~2.4.x"
+    "gulp-concat": "~2.4.x",
+    "gulp-uglify": "~1.0.x"
   },
   "devDependencies": {},
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/finelineworks/fineline-react"
