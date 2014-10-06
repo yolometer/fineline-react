@@ -152,7 +152,7 @@ function togglePlayPause(catIndex, taskIndex) {
   }
   if(cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = false;
-    cats[catIndex].tasks[taskIndex].timespans[cats[catIndex].tasks[taskIndex].timespans.length - 1][2] = Math.floor(now);
+    cats[catIndex].tasks[taskIndex].timespans[cats[catIndex].tasks[taskIndex].timespans.length - 1][2] = now;
     renderBody();
     return;
   }
