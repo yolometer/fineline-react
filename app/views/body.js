@@ -235,9 +235,6 @@ var Task = React.createClass({
   render: function() {
     var displayList = [];
 
-    // Task line base
-    displayList.push(React.DOM.rect({key: 'base', x: 0, y: this.props.y, width: this.props.right, height: taskHeight, fill: taskDefaultColor}));
-
     // Title area shade
     if(this.props.task.color) {
       // Multiply color with 0.85 to produce the color shaded by 0.15
@@ -358,6 +355,7 @@ var TaskList = React.createClass({
     var displayList = [];
     var currentY = 0;
 
+
     for (var cat in this.props.cats) {
       if(this.props.cats[cat].title) {
         displayList.push(new Category({key: 'cat_'+ cat, y: currentY, cat: this.props.cats[cat], index: cat, right: this.props.width}));
@@ -374,6 +372,10 @@ var TaskList = React.createClass({
 
     // “NOW” line
     displayList.push(React.DOM.path({key: "nowline", d: 'm ' + (this.props.width - nowLineOffset) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
+
+    // Default background
+    displayList = [React.DOM.rect({key: 'base', x: 0, y: 0, width: this.props.width, height: currentY, fill: taskDefaultColor})].concat(displayList);
+
     return React.DOM.svg({
       xmlns: "http://www.w3.org/2000/svg",
       width: this.props.width,
