@@ -93,8 +93,8 @@ function toggleCatExpanded(index){
   renderBody();
 }
 
-var TaskListTaskTitle = React.createClass({
-  displayName: "TaskListTaskTitle",
+var TaskTitle = React.createClass({
+  displayName: "TaskTitle",
   render: function() {
     var displayList = [];
     var localX = this.props.x;
@@ -227,8 +227,8 @@ function multiplyHexString(hex, mult) {
 }
 
 
-var TaskListTask = React.createClass({
-  displayName: "TaskListTask",
+var Task = React.createClass({
+  displayName: "Task",
   playPause: function() {
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
@@ -244,7 +244,7 @@ var TaskListTask = React.createClass({
       displayList.push(React.DOM.rect({key: 'shaded', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: multiplyHexString(this.props.task.color, 0.85)}));
     }
     // Title
-    displayList.push(new TaskListTaskTitle({key: 'title', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
+    displayList.push(new TaskTitle({key: 'title', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
 
     // Play/Pause button
     var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
@@ -342,7 +342,7 @@ var Category = React.createClass({
     if(this.props.cat.expanded) {
       for (var task in this.props.cat.tasks) {
         if(this.props.cat.tasks[task].title) {
-          displayList.push(new TaskListTask({key: this.props.cat.tasks[task].title, y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index, right: this.props.right}));
+          displayList.push(new Task({key: this.props.cat.tasks[task].title, y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index, right: this.props.right}));
           this.props.y += taskHeight;
         }
       }
