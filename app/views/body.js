@@ -22,6 +22,15 @@ var now = Math.floor(Date.now() / 1000);
 
 var cats = [];
 
+Object.defineProperty(Array.prototype, 'remove', {
+  value: function(from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+  },
+  enumerable: false
+});
+
 if(!localStorage.cats) {
   cats = [
     {title: "Development", expanded: true, tasks: [
@@ -252,12 +261,25 @@ function multiplyHexString(hex, mult) {
   return '#' + multiplyHexComponent(hex.substr(1,2), mult) + multiplyHexComponent(hex.substr(3,2), mult) + multiplyHexComponent(hex.substr(5,2), mult);
 }
 
+function deleteTask(catIndex, taskIndex){
+  cats[catIndex].tasks.remove(taskIndex);
+  dirtyData();
+}
+
+function deleteTaskInteractive(catIndex, taskIndex){
+  if(window.confirm("Are you sure?")) {
+    deleteTask(catIndex, taskIndex);
+  }
+}
 
 var Task = React.createClass({
   displayName: "Task",
   mixins: [React.addons.PureRenderMixin],
   playPause: function() {
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
+  },
+  deleteTask: function() {
+    deleteTaskInteractive(this.catIndex, this.taskIndex);
   },
   render: function() {
     var displayList = [];
@@ -427,7 +449,6 @@ var TaskList = React.createClass({
       this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
         return typeof a !== 'number'? a.total + b.total: a + b.total;
       });
-
       if(this.props.cats[cat].total > Date.DAY) {
         biggerNow = true;
       }
