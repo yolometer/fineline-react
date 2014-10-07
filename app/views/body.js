@@ -3,15 +3,16 @@ var catHeight = 80;
 var catDefaultColor = "#e6e6e6";
 var catDefaultTextColor = "#333333";
 
-var nowLineOffset = 120;
+var nowLineOffset = 140;
 var taskListWidth = 396;
 
 var testUid = 1;
 
+Date.MINUTE = 60;
+Date.HOUR = 60 * Date.MINUTE;
+Date.DAY = 24 * Date.HOUR;
 
-var pixelsPerMinute = 15;
-var timescale = pixelsPerMinute / 60;
-
+var timescale = 15 / Date.MINUTE;
 
 var taskHeight = 64;
 var taskDefaultColor = "#f2f2f2";
@@ -25,17 +26,17 @@ if(!localStorage.cats) {
       {
         title: "Create and document data and API structures",
         color: "#bf7294",
-        timespans: [[1, now - (45 * 60), (now - (45 * 60)) + (20 * 60)]]
+        timespans: [[1, now - (45 * Date.MINUTE), (now - (45 * Date.MINUTE)) + (20 * Date.MINUTE)]]
       },
       {
         title: "Set up major API routes",
         color: "#a7bf72",
-        timespans: [[1, now - (15 * 60)]]
+        timespans: [[1, now - (15 * Date.MINUTE)]]
       },
       {
         title: "Build services to synchronize the data",
         color: "#72bfaf",
-        timespans: [[1, now - ((45 * 60) + (3 * 60 * 60)), now - (45 * 60)]]
+        timespans: [[1, now - ((45 * Date.MINUTE) + (3 * Date.HOUR)), now - (45 * 60)]]
       },
       {
         title: "Build services to format the data",
@@ -46,7 +47,7 @@ if(!localStorage.cats) {
       {
         title: "Create first-run visual mockups of the project view",
         color: "#bf8372",
-        timespans: [[1, now - (6 * 60 * 60), now - (5 * 60 * 60)]]
+        timespans: [[1, now - (6 * Date.HOUR), now - (5 * Date.HOUR)]]
       },
       {
         title: "Finalize design for MVP, and implement with React",
@@ -61,7 +62,7 @@ if(!localStorage.cats) {
       {
         title: "Deploy testing API endpoints to DigitalOcean Droplet",
         color: "#8172bf",
-        timespans: [[2, now - ((30 * 60) + (1 * 60 * 60)), now - (1 * 60 * 60)]]
+        timespans: [[2, now - ((30 * Date.MINUTE) + (1 * Date.HOUR)), now - (1 * Date.HOUR)]]
       },
       {
         title: "Set up DNS records for API, site, and mailer",
@@ -169,13 +170,33 @@ function zeroPad(num, numZeros) {
   return zeroString+n;
 }
 
+function spanSum(now) {
+  function spanSize(span){
+    return span[2]? span[2] - span[1]:( now - span[1] );
+  }
+  return {
+    reduce: function (a, b) {
+      return typeof a !== 'number'?
+        spanSize(a) + spanSize(b)
+        :a + spanSize(b);
+    },
+    sum: spanSize
+  };
+}
+
+function sumSpans(spans, now) {
+  var ss = spanSum(now);
+  var total = spans.reduce(ss.reduce);
+  return typeof total !== 'number'? ss.sum(total): total;
+}
+
 
 function sumFormatSpans(spans){
-  var timespanSum = 0;
-  spans.forEach(function(span) {
-    timespanSum += span[2]? span[2] - span[1]:( now - span[1] );
-  });
-  return zeroPad(Math.floor(timespanSum / 60 / 60) % 24, 2) + ':' + zeroPad((Math.floor(timespanSum / 60) % 60), 2);
+  return formatDuration(sumSpans(spans, now));
+}
+
+function formatDuration(duration) {
+  return (duration > Date.DAY? Math.floor(duration / Date.DAY) + 'd ': '') + zeroPad(Math.floor(duration / Date.HOUR) % 24, 2) + ':' + zeroPad((Math.floor(duration / Date.MINUTE) % 60), 2);
 }
 
 var TaskEndColumn = React.createClass({
@@ -183,11 +204,7 @@ var TaskEndColumn = React.createClass({
   render: function () {
     var displayList = [];
 
-    if(this.props.timespans.length > 0) {
-      displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, text: sumFormatSpans(this.props.timespans)}));
-    } else {
-      displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, fill: '#CCCCCC', text: '00:00'}));
-    }
+    displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, text: formatDuration(this.props.total), fill: this.props.total === 0? '#cccccc': undefined}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -197,23 +214,27 @@ function projectTime(time, x, width){
   return (width - ((now - time) * timescale)) + x;
 }
 
+function lastVisibleInstant(width) {
+  return now - (width / timescale);
+}
+
 var TimeSpans = React.createClass({
   displayName: "TimeSpans",
   render: function() {
     var displayList = [];
     var right = this.props.x + this.props.width;
-    var props = this.props;
-    this.props.timespans.forEach(function(span){
-      var startX = projectTime(span[1], props.x, props.width);
-      var endX = span[2]? projectTime(span[2], props.x, props.width): props.x + props.width;
+    var startX = 0, endX = 0;
 
-      if(endX > props.x) {
-        if(startX < props.x) {
-          startX = props.x;
-        }
-        displayList.push(React.DOM.rect({key: span, x: startX, y: props.y, width: endX - startX, height: props.height, opacity: props.opacity, fill: props.fill, onClick: props.onClick}));
+    for(span in this.props.timespans) {
+      startX = projectTime(this.props.timespans[span][1], this.props.x, this.props.width);
+      endX = this.props.timespans[span][2]? projectTime(this.props.timespans[span][2], this.props.x, this.props.width): this.props.x + this.props.width;
+
+      if(startX < this.props.x) {
+        startX = this.props.x;
       }
-    });
+
+      displayList.push(React.DOM.rect({key: this.props.timespans[span], x: startX, y: this.props.y, width: endX - startX, height: this.props.height, opacity: this.props.opacity, fill: this.props.fill, onClick: this.props.onClick}));
+    }
     return React.DOM.g({}, null, displayList);
   }
 });
@@ -248,10 +269,10 @@ var Task = React.createClass({
     displayList.push(new PlayPauseButton({key: 'playpause', x: taskListWidth - 59, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
 
     // Time Column
-    displayList.push(new TaskEndColumn({key: 'timecol', timespans: this.props.task.timespans, y: this.props.y, started: this.props.task.started, right: this.props.right}));
+    displayList.push(new TaskEndColumn({key: 'timecol', total: this.props.task.total, y: this.props.y, started: this.props.task.started, right: this.props.right}));
 
     // Time spans
-    displayList.push(new TimeSpans({key: 'timespans', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.timespans}));
+    displayList.push(new TimeSpans({key: 'timespans', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -322,16 +343,17 @@ var Category = React.createClass({
     displayList.push(new PlusButton({key: 'plusbutton' + this.props.index, x: taskListWidth - 68, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
-    var timespans = [];
-    this.props.cat.tasks.forEach(function(task) {
-      task.timespans.forEach(function(span) {
-        timespans.push(span);
-      });
-    });
-    displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 56, text: sumFormatSpans(timespans)}));
+    displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 56, text: formatDuration(this.props.cat.total)}));
 
     // Time spans
     if (!this.props.cat.expanded) {
+      var timespans = [];
+      for(var task in this.props.cat.tasks) {
+        for(var span in this.props.cat.tasks[task].visibleTimespans) {
+          timespans.push(this.props.cat.tasks[task].visibleTimespans[span]);
+        }
+      }
+
       displayList.push(new TimeSpans({key: 'timespans', x: taskListWidth, y: this.props.y, height: catHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
     }
     this.props.y += catHeight;
@@ -355,8 +377,48 @@ var TaskList = React.createClass({
     var displayList = [];
     var currentY = 0;
 
+    var cat = 0;
 
-    for (var cat in this.props.cats) {
+    var biggerNow = false;
+
+    var lastVisible = lastVisibleInstant((this.props.width - (nowLineOffset + taskListWidth)));
+
+    for (cat in this.props.cats) {
+      if(this.props.cats[cat].tasks) {
+        this.props.cats[cat].tasks = this.props.cats[cat].tasks.map(function (task) {
+          if(task.timespans.length > 0){
+            task.total = sumSpans(task.timespans, now);
+          } else {
+            task.total = 0;
+          }
+
+          if(task.total > Date.DAY) {
+            biggerNow = true;
+          }
+
+          task.visibleTimespans = [];
+          for(span in task.timespans) {
+            if(task.timespans[span][2]?task.timespans[span][2] > lastVisible: task.timespans[span][2] !== undefined? false: true) {
+              task.visibleTimespans.push(task.timespans[span]);
+            }
+          }
+          return task;
+        });
+      }
+
+      this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
+        return typeof a !== 'number'? a.total + b.total: a + b.total;
+      });
+
+      if(this.props.cats[cat].total > Date.DAY) {
+        biggerNow = true;
+      }
+    }
+
+    cat = 0;
+
+
+    for (cat in this.props.cats) {
       if(this.props.cats[cat].title) {
         displayList.push(new Category({key: 'cat_'+ cat, y: currentY, cat: this.props.cats[cat], index: cat, right: this.props.width}));
         currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
