@@ -6,7 +6,7 @@ var rename  = require('gulp-rename');
 
 
 
-var jsfiles = ['./app/bower/pleasejs/dist/Please.js', './app/bower/react/react.js', './app/views/*.js', './app/providers/*.js'];
+var jsfiles = ['./app/bower/pleasejs/dist/Please.js', './app/bower/react/react-with-addons.js', './app/views/*.js', './app/providers/*.js'];
 var indexhtml = ['./app/index.html'];
 
 gulp.task('dev', function () {

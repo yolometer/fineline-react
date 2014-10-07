@@ -126,9 +126,9 @@ var TaskTitle = React.createClass({
   }
 });
 
-
 var PlayPauseButton = React.createClass({
   displayName: "PlayPauseButton",
+  mixins: [React.addons.PureRenderMixin],
   render: function () {
     var displayList = [];
     if(!this.props.started) {
@@ -203,6 +203,7 @@ function formatDuration(duration) {
 
 var TaskEndColumn = React.createClass({
   displayName: "TaskEndColumn",
+  mixins: [React.addons.PureRenderMixin],
   render: function () {
     var displayList = [];
 
@@ -212,8 +213,9 @@ var TaskEndColumn = React.createClass({
   }
 });
 
-function projectTime(time, x, width){
-  return (width - ((now - time) * timescale)) + x;
+function projectTime(time, x, width, nowArg){
+  var nowLocal = nowArg || now;
+  return (width - ((nowLocal - time) * timescale)) + x;
 }
 
 function lastVisibleInstant(width) {
@@ -222,13 +224,14 @@ function lastVisibleInstant(width) {
 
 var TimeSpans = React.createClass({
   displayName: "TimeSpans",
+  mixins: [React.addons.PureRenderMixin],
   render: function() {
     var displayList = [];
     var right = this.props.x + this.props.width;
     var startX = 0, endX = 0;
 
     for(span in this.props.timespans) {
-      startX = projectTime(this.props.timespans[span][1], this.props.x, this.props.width);
+      startX = projectTime(this.props.timespans[span][1], this.props.x, this.props.width, this.props.now);
       endX = this.props.timespans[span][2]? projectTime(this.props.timespans[span][2], this.props.x, this.props.width): this.props.x + this.props.width;
 
       if(startX < this.props.x) {
@@ -252,6 +255,7 @@ function multiplyHexString(hex, mult) {
 
 var Task = React.createClass({
   displayName: "Task",
+  mixins: [React.addons.PureRenderMixin],
   playPause: function() {
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
@@ -280,7 +284,7 @@ var Task = React.createClass({
     displayList.push(new TaskEndColumn({key: 'c', total: this.props.task.total, y: this.props.y, started: this.props.task.started, right: this.props.right}));
 
     // Time spans
-    displayList.push(new TimeSpans({key: 'a', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans}));
+    displayList.push(new TimeSpans({key: 'a', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans, now: this.props.now}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -288,6 +292,7 @@ var Task = React.createClass({
 
 var TimeLabel = React.createClass({
   displayName: "TimeLabel",
+  mixins: [React.addons.PureRenderMixin],
   render: function () {
     return React.DOM.text({key: this.props.text, x: this.props.x, y: this.props.y, fill: this.props.fill || catDefaultTextColor, fontSize: this.props.fontSize || 32, fontFamily: this.props.fontFamily || "Roboto", textAnchor: 'middle'}, this.props.text);
   }
@@ -295,6 +300,7 @@ var TimeLabel = React.createClass({
 
 var PlusButton = React.createClass({
   displayName: "PlusButton",
+  mixins: [React.addons.PureRenderMixin],
   render: function () {
     var displayList = [];
     displayList.push(React.DOM.rect({key: 'v', x: (this.props.x + 30), y: this.props.y + 16, width: 4, height: 32, fill: this.props.fill}));
@@ -315,6 +321,7 @@ function addTask(index) {
 
 var ExpansionIndicator = React.createClass({
   displayName: "ExpansionIndicator",
+  mixins: [React.addons.PureRenderMixin],
   render: function (){
     if(this.props.expanded) {
       return React.DOM.path({d: 'm ' + (this.props.x + 14) + ',' + (this.props.y + 2) + ' -16,0 8,12 z', fill: this.props.fill, onClick: this.props.onClick});
@@ -328,6 +335,7 @@ var ExpansionIndicator = React.createClass({
 
 var Category = React.createClass({
   displayName: "Category",
+  mixins: [React.addons.PureRenderMixin],
   toggleExpanded: function(){
     toggleCatExpanded(this.props.index);
   },
@@ -362,14 +370,14 @@ var Category = React.createClass({
         }
       }
 
-      displayList.push(new TimeSpans({key: 's', x: taskListWidth, y: this.props.y, height: catHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
+      displayList.push(new TimeSpans({key: 's', x: taskListWidth, y: this.props.y, height: catHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded, now: this.props.now}));
     }
     this.props.y += catHeight;
 
     if(this.props.cat.expanded) {
       for (var task in this.props.cat.tasks) {
         if(this.props.cat.tasks[task].title) {
-          displayList.push(new Task({key: this.props.cat.tasks[task].title, y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index, right: this.props.right}));
+          displayList.push(new Task({key: this.props.cat.tasks[task].title, y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index, right: this.props.right, now: this.props.now}));
           this.props.y += taskHeight;
         }
       }
@@ -381,6 +389,7 @@ var Category = React.createClass({
 
 var TaskList = React.createClass({
   displayName: "TaskList",
+  mixins: [React.addons.PureRenderMixin],
   render: function() {
     var displayList = [];
     var currentY = 0;
@@ -428,7 +437,7 @@ var TaskList = React.createClass({
 
     for (cat in this.props.cats) {
       if(this.props.cats[cat].title) {
-        displayList.push(new Category({key: 'c' + cat, y: currentY, cat: this.props.cats[cat], index: cat, right: this.props.width}));
+        displayList.push(new Category({key: 'c' + cat, y: currentY, cat: this.props.cats[cat], index: cat, right: this.props.width, now: this.props.now}));
         currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
       }
     }
@@ -458,7 +467,7 @@ var TaskList = React.createClass({
 
 function renderBody() {
   now = Date.now() / 1000;
-  React.renderComponent(new TaskList({cats: cats, width: window.innerWidth}), document.body);
+  React.renderComponent(new TaskList({cats: cats, width: window.innerWidth, now: now}), document.body);
 }
 
 function renderLoop() {
