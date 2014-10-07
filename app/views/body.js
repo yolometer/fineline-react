@@ -136,6 +136,20 @@ var TaskTitle = React.createClass({
   }
 });
 
+var DeleteButton = React.createClass({
+  displayName: "DeleteButton",
+  mixins: [React.addons.PureRenderMixin],
+  render: function () {
+    var displayList = [];
+      displayList.push(React.DOM.path({key: 'x', d: 'm ' + (this.props.x + 20) + ',' + (this.props.y + 12) + ' -8,8 m 0,-8 8,8', fill: 'none', strokeWidth: 2, stroke: this.props.fill}));
+
+    displayList.push(React.DOM.rect({key: 'c', x: this.props.x, y: this.props.y, width: 32, height: 32, fill: 'black', opacity: 0, onClick: this.props.onClick}));
+    return React.DOM.g({}, null, displayList);
+  }
+});
+
+
+
 var PlayPauseButton = React.createClass({
   displayName: "PlayPauseButton",
   mixins: [React.addons.PureRenderMixin],
@@ -279,10 +293,11 @@ var Task = React.createClass({
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
   deleteTask: function() {
-    deleteTaskInteractive(this.catIndex, this.taskIndex);
+    deleteTaskInteractive(this.props.catIndex, this.props.taskIndex);
   },
   render: function() {
     var displayList = [];
+    var color = this.props.task.color? '#FFF': catDefaultTextColor;
 
     // Title area shade
     if(this.props.task.shadeColor) {
@@ -295,12 +310,15 @@ var Task = React.createClass({
       }
     }
 
+    // Delete button
+    displayList.push(new DeleteButton({key: 'd', x: 4, y: (this.props.y + 16), fill: color, onClick: this.deleteTask}));
+
+
     // Title
     displayList.push(new TaskTitle({key: 't', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
 
     // Play/Pause button
-    var playPauseColor = this.props.task.color? '#FFF': catDefaultTextColor;
-    displayList.push(new PlayPauseButton({key: 'p', x: taskListWidth - 59, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
+    displayList.push(new PlayPauseButton({key: 'p', x: taskListWidth - 59, y: (this.props.y + 8), fill: color, onClick: this.playPause, started: this.props.task.started}));
 
     // Time Column
     displayList.push(new TaskEndColumn({key: 'c', total: this.props.task.total, y: this.props.y, started: this.props.task.started, right: this.props.right}));
@@ -336,7 +354,7 @@ var PlusButton = React.createClass({
 function addTask(index) {
   var newTitle = window.prompt("Enter a title for your new task.");
   if(newTitle && newTitle.length && newTitle.length > 0) {
-    cats[index].tasks.push({title: newTitle, timespans: []});
+    cats[index].tasks.push({title: newTitle, timespans: [], total: 0});
     dirtyData();
   }
 }
@@ -421,10 +439,11 @@ var TaskList = React.createClass({
     var biggerNow = false;
 
     var lastVisible = lastVisibleInstant(this.props.width - (nowLineOffset + taskListWidth), this.props.now);
+    var now = this.props.now;
 
     for (cat in this.props.cats) {
-      if(this.props.cats[cat].tasks) {
-        var now = this.props.now;
+      this.props.cats[cat].total = 0;
+      if(this.props.cats[cat].tasks && this.props.cats[cat].tasks.length > 0) {
         this.props.cats[cat].tasks = this.props.cats[cat].tasks.map(function (task) {
           if(task.timespans.length > 0){
             task.total = sumSpans(task.timespans, now);
@@ -444,13 +463,14 @@ var TaskList = React.createClass({
           }
           return task;
         });
-      }
 
-      this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
-        return typeof a !== 'number'? a.total + b.total: a + b.total;
-      });
-      if(this.props.cats[cat].total > Date.DAY) {
-        biggerNow = true;
+        this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
+          return typeof a !== 'number'? a.total + b.total: a + b.total;
+        });
+
+        if(this.props.cats[cat].total > Date.DAY) {
+          biggerNow = true;
+        }
       }
     }
 
