@@ -16,6 +16,8 @@ var timescale = 15 / Date.MINUTE;
 
 var taskHeight = 64;
 var taskDefaultColor = "#f2f2f2";
+var taskTitleFontFactor = (35 / 290); // Ratio of chars to pixels, 35/290 seems to work for most cases for most fonts.
+
 var now = Math.floor(Date.now() / 1000);
 
 var cats = [];
@@ -100,7 +102,7 @@ var TaskTitle = React.createClass({
     var displayList = [];
     var localX = this.props.x;
     var localY = this.props.y + 28;
-    var chars = (35 / 290) * (this.props.width || 290);
+    var chars =  (taskTitleFontFactor * this.props.width) || 290;
     var maxlines = this.props.maxLines || 2;
     var accum = '';
 
@@ -112,15 +114,15 @@ var TaskTitle = React.createClass({
           accum = accum.substr(0, accum.length - 2) + '…';
         }
         if(displayList.length < maxlines) {
-          displayList.push(React.DOM.tspan({key: 'line_' + displayList.length, x: localX, y: localY + (displayList.length * 22)}, accum));
+          displayList.push(React.DOM.tspan({key: 'l' + displayList.length, x: localX, y: localY + (displayList.length * 22)}, accum));
           accum = t + ' ';
         }
       }
     });
     if(displayList.length < maxlines) {
-      displayList.push(React.DOM.tspan({key: 'line_' + displayList.length, x: localX, y: localY + (displayList.length * 22)}, accum));
+      displayList.push(React.DOM.tspan({key: 'l' + displayList.length, x: localX, y: localY + (displayList.length * 22)}, accum));
     }
-    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Roboto, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: this.props.y + 28}, null, displayList);
+    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Roboto, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: localY}, null, displayList);
   }
 });
 
@@ -130,13 +132,13 @@ var PlayPauseButton = React.createClass({
   render: function () {
     var displayList = [];
     if(!this.props.started) {
-      displayList.push(React.DOM.path({key: 'playsign', d: 'm ' + (this.props.x + 15) + ',' + (this.props.y + 12) + ' 0,24 18,-12 z', fill: this.props.fill}));
+      displayList.push(React.DOM.path({key: 'p', d: 'm ' + (this.props.x + 15) + ',' + (this.props.y + 12) + ' 0,24 18,-12 z', fill: this.props.fill}));
     }
     if(this.props.started) {
-      displayList.push(React.DOM.rect({key: 'leftbar', x: (this.props.x + 13), y: (this.props.y + 12), width: 8, height: 24, fill: this.props.fill}));
-      displayList.push(React.DOM.rect({key: 'rightbar', x: (this.props.x + 27), y: (this.props.y + 12), width: 8, height: 24, fill: this.props.fill}));
+      displayList.push(React.DOM.rect({key: 'l', x: (this.props.x + 13), y: (this.props.y + 12), width: 8, height: 24, fill: this.props.fill}));
+      displayList.push(React.DOM.rect({key: 'r', x: (this.props.x + 27), y: (this.props.y + 12), width: 8, height: 24, fill: this.props.fill}));
     }
-    displayList.push(React.DOM.rect({key: 'clicktarget', x: this.props.x, y: this.props.y, width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.props.onClick}));
+    displayList.push(React.DOM.rect({key: 'c', x: this.props.x, y: this.props.y, width: 48, height: 48, fill: 'black', opacity: 0, onClick: this.props.onClick}));
     return React.DOM.g({}, null, displayList);
   }
 });
@@ -204,7 +206,7 @@ var TaskEndColumn = React.createClass({
   render: function () {
     var displayList = [];
 
-    displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, text: formatDuration(this.props.total), fill: this.props.total === 0? '#cccccc': undefined}));
+    displayList.push(new TimeLabel({key: 'l', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, text: formatDuration(this.props.total), fill: this.props.total === 0? '#cccccc': undefined}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -258,27 +260,27 @@ var Task = React.createClass({
 
     // Title area shade
     if(this.props.task.shadeColor) {
-      displayList.push(React.DOM.rect({key: 'shaded', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.shadeColor}));
+      displayList.push(React.DOM.rect({key: 's', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.shadeColor}));
     } else {
       if(this.props.task.color) {
         // Multiply color with 0.85 to produce the color shaded by 0.15
         this.props.task.shadeColor = multiplyHexString(this.props.task.color, 0.85);
-        displayList.push(React.DOM.rect({key: 'shaded', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.shadeColor}));
+        displayList.push(React.DOM.rect({key: 's', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.shadeColor}));
       }
     }
 
     // Title
-    displayList.push(new TaskTitle({key: 'title', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
+    displayList.push(new TaskTitle({key: 't', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
 
     // Play/Pause button
-    var playPauseColor = this.props.task.color? 'white': catDefaultTextColor;
-    displayList.push(new PlayPauseButton({key: 'playpause', x: taskListWidth - 59, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
+    var playPauseColor = this.props.task.color? '#FFF': catDefaultTextColor;
+    displayList.push(new PlayPauseButton({key: 'p', x: taskListWidth - 59, y: (this.props.y + 8), fill: playPauseColor, onClick: this.playPause, started: this.props.task.started}));
 
     // Time Column
-    displayList.push(new TaskEndColumn({key: 'timecol', total: this.props.task.total, y: this.props.y, started: this.props.task.started, right: this.props.right}));
+    displayList.push(new TaskEndColumn({key: 'c', total: this.props.task.total, y: this.props.y, started: this.props.task.started, right: this.props.right}));
 
     // Time spans
-    displayList.push(new TimeSpans({key: 'timespans', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans}));
+    displayList.push(new TimeSpans({key: 'a', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -295,9 +297,9 @@ var PlusButton = React.createClass({
   displayName: "PlusButton",
   render: function () {
     var displayList = [];
-    displayList.push(React.DOM.rect({key: 'vertical', x: (this.props.x + 30), y: this.props.y + 16, width: 4, height: 32, fill: this.props.fill}));
-    displayList.push(React.DOM.rect({key: 'horizontal', x: (this.props.x + 16), y: this.props.y + 30, width: 32, height: 4, fill: this.props.fill}));
-    displayList.push(React.DOM.rect({key: 'clicktarget', x: this.props.x, y: this.props.y, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.props.onClick}));
+    displayList.push(React.DOM.rect({key: 'v', x: (this.props.x + 30), y: this.props.y + 16, width: 4, height: 32, fill: this.props.fill}));
+    displayList.push(React.DOM.rect({key: 'h', x: (this.props.x + 16), y: this.props.y + 30, width: 32, height: 4, fill: this.props.fill}));
+    displayList.push(React.DOM.rect({key: 'c', x: this.props.x, y: this.props.y, width: 64, height: 64, opacity: 0, fill: 'black', onClick: this.props.onClick}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -337,19 +339,19 @@ var Category = React.createClass({
     this.props.y = this.props.y || 0;
 
     // Category line
-    displayList.push(React.DOM.rect({key: 'catline', x: 0, y: this.props.y, width: this.props.right, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
+    displayList.push(React.DOM.rect({key: 'l', x: 0, y: this.props.y, width: this.props.right, height: catHeight, fill: catDefaultColor, onClick: this.toggleExpanded}));
 
     // Category heading
-    displayList.push(React.DOM.text({key: 'catheading', x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Roboto, Sans'}, this.props.cat.title));
+    displayList.push(React.DOM.text({key: 'h', x: 40, y: this.props.y + 56, "fontSize": '48px', fill: catDefaultTextColor, fontFamily: 'Roboto, Sans'}, this.props.cat.title));
 
     // Expansion indicator
-    displayList.push(new ExpansionIndicator({key: 'expansionindicator', x: 14,  y: (this.props.y + 34), fill: catDefaultTextColor, expanded: this.props.cat.expanded, onClick: this.toggleExpanded}));
+    displayList.push(new ExpansionIndicator({key: 'e', x: 14,  y: (this.props.y + 34), fill: catDefaultTextColor, expanded: this.props.cat.expanded, onClick: this.toggleExpanded}));
 
     // Plus button
-    displayList.push(new PlusButton({key: 'plusbutton' + this.props.index, x: taskListWidth - 68, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
+    displayList.push(new PlusButton({key: 'p' + this.props.index, x: taskListWidth - 68, y: this.props.y + 8, onClick: this.addTask, fill: catDefaultTextColor}));
 
     // TOTAL label
-    displayList.push(new TimeLabel({key: 'timelabel', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 56, text: formatDuration(this.props.cat.total)}));
+    displayList.push(new TimeLabel({key: 't', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 56, text: formatDuration(this.props.cat.total)}));
 
     // Time spans
     if (!this.props.cat.expanded) {
@@ -360,7 +362,7 @@ var Category = React.createClass({
         }
       }
 
-      displayList.push(new TimeSpans({key: 'timespans', x: taskListWidth, y: this.props.y, height: catHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
+      displayList.push(new TimeSpans({key: 's', x: taskListWidth, y: this.props.y, height: catHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
     }
     this.props.y += catHeight;
 
@@ -426,7 +428,7 @@ var TaskList = React.createClass({
 
     for (cat in this.props.cats) {
       if(this.props.cats[cat].title) {
-        displayList.push(new Category({key: 'cat_'+ cat, y: currentY, cat: this.props.cats[cat], index: cat, right: this.props.width}));
+        displayList.push(new Category({key: 'c' + cat, y: currentY, cat: this.props.cats[cat], index: cat, right: this.props.width}));
         currentY += catHeight + (this.props.cats[cat].expanded?this.props.cats[cat].tasks.length * taskHeight: 0);
       }
     }
@@ -436,13 +438,13 @@ var TaskList = React.createClass({
     }
 
     // Task list separator line
-    displayList.push(React.DOM.rect({key: "separator", x: taskListWidth - 2, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
+    displayList.push(React.DOM.rect({key: "s", x: taskListWidth - 2, y: 0, width: 2, height: currentY, opacity: 0.4, fill: "black"}));
 
     // “NOW” line
-    displayList.push(React.DOM.path({key: "nowline", d: 'm ' + (this.props.width - nowLineOffset) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
+    displayList.push(React.DOM.path({key: "n", d: 'm ' + (this.props.width - nowLineOffset) + ',0 0,' + currentY, opacity: 0.4, "strokeOpacity": 1, "stroke" : "black", "strokeWidth": 2, strokeDasharray: "2, 8"}));
 
     // Default background
-    displayList = [React.DOM.rect({key: 'base', x: 0, y: 0, width: this.props.width, height: currentY, fill: taskDefaultColor})].concat(displayList);
+    displayList = [React.DOM.rect({key: 'b', x: 0, y: 0, width: this.props.width, height: currentY, fill: taskDefaultColor})].concat(displayList);
 
     return React.DOM.svg({
       xmlns: "http://www.w3.org/2000/svg",
