@@ -98,6 +98,7 @@ function toggleCatExpanded(index){
 
 var TaskTitle = React.createClass({
   displayName: "TaskTitle",
+  mixins: [React.addons.PureRenderMixin],
   render: function() {
     var displayList = [];
     var localX = this.props.x;
@@ -214,12 +215,11 @@ var TaskEndColumn = React.createClass({
 });
 
 function projectTime(time, x, width, nowArg){
-  var nowLocal = nowArg || now;
-  return (width - ((nowLocal - time) * timescale)) + x;
+  return (width - ((nowArg - time) * timescale)) + x;
 }
 
-function lastVisibleInstant(width) {
-  return now - (width / timescale);
+function lastVisibleInstant(width, nowArg) {
+  return nowArg - (width / timescale);
 }
 
 var TimeSpans = React.createClass({
@@ -232,7 +232,7 @@ var TimeSpans = React.createClass({
 
     for(span in this.props.timespans) {
       startX = projectTime(this.props.timespans[span][1], this.props.x, this.props.width, this.props.now);
-      endX = this.props.timespans[span][2]? projectTime(this.props.timespans[span][2], this.props.x, this.props.width): this.props.x + this.props.width;
+      endX = this.props.timespans[span][2]? projectTime(this.props.timespans[span][2], this.props.x, this.props.width, this.props.now): this.props.x + this.props.width;
 
       if(startX < this.props.x) {
         startX = this.props.x;
@@ -398,10 +398,11 @@ var TaskList = React.createClass({
 
     var biggerNow = false;
 
-    var lastVisible = lastVisibleInstant((this.props.width - (nowLineOffset + taskListWidth)));
+    var lastVisible = lastVisibleInstant(this.props.width - (nowLineOffset + taskListWidth), this.props.now);
 
     for (cat in this.props.cats) {
       if(this.props.cats[cat].tasks) {
+        var now = this.props.now;
         this.props.cats[cat].tasks = this.props.cats[cat].tasks.map(function (task) {
           if(task.timespans.length > 0){
             task.total = sumSpans(task.timespans, now);
