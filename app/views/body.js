@@ -463,9 +463,12 @@ var TaskList = React.createClass({
           return task;
         });
 
-        this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
-          return typeof a !== 'number'? a.total + b.total: a + b.total;
-        });
+        if(this.props.cats[cat].tasks.length > 1) {
+          this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
+            return typeof a !== 'number'? a.total + b.total: a + b.total;
+          });
+        } else this.props.cats[cat].total = this.props.cats[cat].tasks[0].total;
+
 
         if(this.props.cats[cat].total > Date.DAY) {
           biggerNow = true;
