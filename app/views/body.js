@@ -257,10 +257,16 @@ var Task = React.createClass({
     var displayList = [];
 
     // Title area shade
-    if(this.props.task.color) {
-      // Multiply color with 0.85 to produce the color shaded by 0.15
-      displayList.push(React.DOM.rect({key: 'shaded', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: multiplyHexString(this.props.task.color, 0.85)}));
+    if(this.props.task.shadeColor) {
+      displayList.push(React.DOM.rect({key: 'shaded', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.shadeColor}));
+    } else {
+      if(this.props.task.color) {
+        // Multiply color with 0.85 to produce the color shaded by 0.15
+        this.props.task.shadeColor = multiplyHexString(this.props.task.color, 0.85);
+        displayList.push(React.DOM.rect({key: 'shaded', x: 0, y: this.props.y, width: taskListWidth, height: taskHeight, fill: this.props.task.shadeColor}));
+      }
     }
+
     // Title
     displayList.push(new TaskTitle({key: 'title', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
 
