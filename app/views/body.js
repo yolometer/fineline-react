@@ -91,7 +91,7 @@ cats = JSON.parse(localStorage.cats);
 
 function toggleCatExpanded(index){
   cats[index].expanded = !cats[index].expanded;
-  renderBody();
+  dirtyData();
 }
 
 var TaskTitle = React.createClass({
@@ -148,13 +148,13 @@ function togglePlayPause(catIndex, taskIndex) {
       cats[catIndex].tasks[taskIndex].color = Please.make_color()[0];
     }
     cats[catIndex].tasks[taskIndex].timespans.push([testUid, now]);
-    renderBody();
+    dirtyData();
     return;
   }
   if(cats[catIndex].tasks[taskIndex].started) {
     cats[catIndex].tasks[taskIndex].started = false;
     cats[catIndex].tasks[taskIndex].timespans[cats[catIndex].tasks[taskIndex].timespans.length - 1][2] = now;
-    renderBody();
+    dirtyData();
     return;
   }
 }
@@ -307,7 +307,7 @@ function addTask(index) {
   var newTitle = window.prompt("Enter a title for your new task.");
   if(newTitle && newTitle.length && newTitle.length > 0) {
     cats[index].tasks.push({title: newTitle, timespans: []});
-    renderBody();
+    dirtyData();
   }
 }
 
@@ -463,6 +463,10 @@ function renderLoop() {
   window.setTimeout(function () {
     window.requestAnimationFrame(renderLoop);
   }, (1 / timescale) * 500);
+  renderBody();
+}
+
+function dirtyData() {
   renderBody();
   localStorage.cats = JSON.stringify(cats);
 }
