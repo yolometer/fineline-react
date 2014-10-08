@@ -23,7 +23,7 @@ var cats = [];
 
 Object.defineProperty(Array.prototype, 'remove', {
   value: function(from, to) {
-    var rest = this.slice((to || from) + 1 || this.length);
+    var rest = this.slice(parseInt(to || from) + 1 || this.length);
     this.length = from < 0 ? this.length + from : from;
     return this.push.apply(this, rest);
   },
