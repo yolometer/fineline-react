@@ -228,11 +228,7 @@ var TaskEndColumn = React.createClass({
   displayName: "TaskEndColumn",
   mixins: [React.addons.PureRenderMixin],
   render: function () {
-    var displayList = [];
-
-    displayList.push(new TimeLabel({key: 'l', x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, text: formatDuration(this.props.total), fill: this.props.total === 0? '#cccccc': undefined}));
-
-    return React.DOM.g({}, null, displayList);
+    return new TimeLabel({key: this.props.key, x: this.props.right - (nowLineOffset / 2), y: this.props.y + 43, text: formatDuration(this.props.total), fill: this.props.total === 0? '#cccccc': undefined});
   }
 });
 
