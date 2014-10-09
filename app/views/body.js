@@ -140,7 +140,7 @@ var DeleteButton = React.createClass({
   mixins: [React.addons.PureRenderMixin],
   render: function () {
     var displayList = [];
-      displayList.push(React.DOM.path({key: 'x', d: 'm ' + (this.props.x + 20) + ',' + (this.props.y + 12) + ' -8,8 m 0,-8 8,8', fill: 'none', strokeWidth: 2, stroke: this.props.fill}));
+    displayList.push(React.DOM.path({key: 'x', d: 'm ' + (this.props.x + 20) + ',' + (this.props.y + 12) + ' -8,8 m 0,-8 8,8', fill: 'none', strokeWidth: 2, stroke: this.props.fill}));
 
     displayList.push(React.DOM.rect({key: 'c', x: this.props.x, y: this.props.y, width: 32, height: 32, fill: 'black', opacity: 0, onClick: this.props.onClick}));
     return React.DOM.g({}, null, displayList);
