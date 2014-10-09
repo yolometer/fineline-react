@@ -427,7 +427,7 @@ var Category = React.createClass({
     if(this.props.cat.expanded) {
       for (var task in this.props.cat.tasks) {
         if(this.props.cat.tasks[task].title) {
-          displayList.push(new Task({key: this.props.cat.tasks[task].title, y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index, right: this.props.right, now: this.props.now}));
+          displayList.push(new Task({key: this.props.cat.tasks[task].title + task, y: this.props.y, task: this.props.cat.tasks[task], taskIndex: task, catIndex: this.props.index, right: this.props.right, now: this.props.now}));
           this.props.y += taskHeight;
         }
       }
