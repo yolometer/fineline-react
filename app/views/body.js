@@ -455,22 +455,26 @@ var TaskList = React.createClass({
       this.props.cats[cat].total = 0;
       if(this.props.cats[cat].tasks && this.props.cats[cat].tasks.length > 0) {
         this.props.cats[cat].tasks = this.props.cats[cat].tasks.map(function (task) {
-          if(task.timespans.length > 0) {
-            task.total = sumSpans(task.timespans, now);
-          } else {
-            task.total = 0;
+          task.visibleTimespans = [];
+          var hasOpenSpans = false;
+          for(span in task.timespans) {
+            if(task.timespans[span][2]?task.timespans[span][2] > lastVisible: hasOpenSpans = task.timespans[span][2] === undefined) {
+              task.visibleTimespans.push(task.timespans[span]);
+            }
+          }
+
+          if(hasOpenSpans || !task.total) {
+            if(task.timespans.length > 0) {
+              task.total = sumSpans(task.timespans, now);
+            } else {
+              task.total = 0;
+            }
           }
 
           if(task.total > Date.DAY) {
             biggerNow = true;
           }
 
-          task.visibleTimespans = [];
-          for(span in task.timespans) {
-            if(task.timespans[span][2]?task.timespans[span][2] > lastVisible: task.timespans[span][2] !== undefined? false: true) {
-              task.visibleTimespans.push(task.timespans[span]);
-            }
-          }
           return task;
         });
 
