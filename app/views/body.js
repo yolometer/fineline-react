@@ -85,7 +85,7 @@ if(!localStorage.cats) {
     ]}
   ];
 
-  cats = cats.map(function (cat){
+  cats = cats.map(function (cat) {
     cat.tasks = cat.tasks.map(function(task) {
       if(task.timespans.length && !task.timespans[task.timespans.length - 1][2]) {
         task.started = true;
@@ -99,7 +99,7 @@ if(!localStorage.cats) {
 
 cats = JSON.parse(localStorage.cats);
 
-function toggleCatExpanded(index){
+function toggleCatExpanded(index) {
   cats[index].expanded = !cats[index].expanded;
   dirtyData();
 }
@@ -119,7 +119,7 @@ var TaskTitle = React.createClass({
       if((accum.length + t.length) < chars) {
         accum += t + ' ';
       } else {
-        if(displayList.length == (maxlines - 1)){
+        if(displayList.length == (maxlines - 1)) {
           accum = accum.substr(0, accum.length - 2) + '…';
         }
         if(displayList.length < maxlines) {
@@ -196,7 +196,7 @@ function zeroPad(num, numZeros) {
 }
 
 function spanSum(now) {
-  function spanSize(span){
+  function spanSize(span) {
     return span[2]? span[2] - span[1]:( now - span[1] );
   }
   return {
@@ -216,7 +216,7 @@ function sumSpans(spans, now) {
 }
 
 
-function sumFormatSpans(spans){
+function sumFormatSpans(spans) {
   return formatDuration(sumSpans(spans, now));
 }
 
@@ -232,7 +232,7 @@ var TaskEndColumn = React.createClass({
   }
 });
 
-function projectTime(time, x, width, nowArg){
+function projectTime(time, x, width, nowArg) {
   return (width - ((nowArg - time) * timescale)) + x;
 }
 
@@ -270,18 +270,18 @@ function multiplyHexString(hex, mult) {
   return '#' + multiplyHexComponent(hex.substr(1,2), mult) + multiplyHexComponent(hex.substr(3,2), mult) + multiplyHexComponent(hex.substr(5,2), mult);
 }
 
-function deleteTask(catIndex, taskIndex){
+function deleteTask(catIndex, taskIndex) {
   cats[catIndex].tasks.remove(taskIndex);
   dirtyData();
 }
 
-function deleteTaskInteractive(catIndex, taskIndex){
+function deleteTaskInteractive(catIndex, taskIndex) {
   if(window.confirm("Are you sure?")) {
     deleteTask(catIndex, taskIndex);
   }
 }
 
-function editTaskTitle(catIndex, taskIndex, title){
+function editTaskTitle(catIndex, taskIndex, title) {
   cats[catIndex].tasks[taskIndex].title = title;
   dirtyData();
 }
@@ -372,7 +372,7 @@ function addTask(index) {
 var ExpansionIndicator = React.createClass({
   displayName: "ExpansionIndicator",
   mixins: [React.addons.PureRenderMixin],
-  render: function (){
+  render: function () {
     if(this.props.expanded) {
       return React.DOM.path({d: 'm ' + (this.props.x + 14) + ',' + (this.props.y + 2) + ' -16,0 8,12 z', fill: this.props.fill, onClick: this.props.onClick});
     }
@@ -386,7 +386,7 @@ var ExpansionIndicator = React.createClass({
 var Category = React.createClass({
   displayName: "Category",
   mixins: [React.addons.PureRenderMixin],
-  toggleExpanded: function(){
+  toggleExpanded: function() {
     toggleCatExpanded(this.props.index);
   },
   addTask: function() {
@@ -455,7 +455,7 @@ var TaskList = React.createClass({
       this.props.cats[cat].total = 0;
       if(this.props.cats[cat].tasks && this.props.cats[cat].tasks.length > 0) {
         this.props.cats[cat].tasks = this.props.cats[cat].tasks.map(function (task) {
-          if(task.timespans.length > 0){
+          if(task.timespans.length > 0) {
             task.total = sumSpans(task.timespans, now);
           } else {
             task.total = 0;
