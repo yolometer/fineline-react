@@ -131,7 +131,7 @@ var TaskTitle = React.createClass({
     if(displayList.length < maxlines) {
       displayList.push(React.DOM.tspan({key: 'l' + displayList.length, x: localX, y: localY + (displayList.length * 22)}, accum));
     }
-    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Roboto, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: localY}, null, displayList);
+    return React.DOM.text({fontSize: '18px', fill: (this.props.color)? 'white': catDefaultTextColor, fontFamily: 'Roboto, Sans', lineHeight: '125%', width: 280, height: 44, x: 40, y: localY, onClick: this.props.onClick}, null, displayList);
   }
 });
 
@@ -281,14 +281,29 @@ function deleteTaskInteractive(catIndex, taskIndex){
   }
 }
 
+function editTaskTitle(catIndex, taskIndex, title){
+  cats[catIndex].tasks[taskIndex].title = title;
+  dirtyData();
+}
+
+function editTaskTitleInteractive(catIndex, taskIndex, title) {
+  var newTitle = window.prompt("Enter a new title for this task", title);
+  if(newTitle && newTitle !== title) {
+    editTaskTitle(catIndex, taskIndex, newTitle);
+  }
+}
+
 var Task = React.createClass({
   displayName: "Task",
   mixins: [React.addons.PureRenderMixin],
   playPause: function() {
     togglePlayPause(this.props.catIndex, this.props.taskIndex);
   },
-  deleteTask: function() {
+  deleteTask: function () {
     deleteTaskInteractive(this.props.catIndex, this.props.taskIndex);
+  },
+  editTitle: function () {
+    editTaskTitleInteractive(this.props.catIndex, this.props.taskIndex, this.props.task.title);
   },
   render: function() {
     var displayList = [];
@@ -310,7 +325,7 @@ var Task = React.createClass({
 
 
     // Title
-    displayList.push(new TaskTitle({key: 't', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color}));
+    displayList.push(new TaskTitle({key: 't', title: this.props.task.title, x: 40, y: this.props.y, width: taskListWidth - (40 + 66), color: this.props.task.color, onClick: this.editTitle}));
 
     // Play/Pause button
     displayList.push(new PlayPauseButton({key: 'p', x: taskListWidth - 59, y: (this.props.y + 8), fill: color, onClick: this.playPause, started: this.props.task.started}));
