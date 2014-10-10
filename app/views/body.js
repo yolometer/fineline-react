@@ -442,44 +442,45 @@ var TaskList = React.createClass({
     var now = this.props.now;
 
     var timeSpansWidth = (this.props.width - (nowLineOffset + taskListWidth));
+
+    var hasOpenSpans = false;
+    var startX, endX;
+
     for (cat in this.props.cats) {
       this.props.cats[cat].total = 0;
       if(this.props.cats[cat].tasks && this.props.cats[cat].tasks.length > 0) {
-        this.props.cats[cat].tasks = this.props.cats[cat].tasks.map(function (task) {
-          task.visibleTimespans = [];
-          var hasOpenSpans = false;
-          for(span in task.timespans) {
-            if(task.timespans[span][2]?task.timespans[span][2] > lastVisible: hasOpenSpans = typeof task.timespans[span][2] !== 'number') {
-              // WARNING: cleverness detected                                 ^ setting hasOpenSpans while passing the value it retains through to the if statement
+        for(task in this.props.cats[cat].tasks) {
+          this.props.cats[cat].tasks[task].visibleTimespans = [];
+          hasOpenSpans = false;
+          for(span in this.props.cats[cat].tasks[task].timespans) {
+            if(this.props.cats[cat].tasks[task].timespans[span][2]?
+               this.props.cats[cat].tasks[task].timespans[span][2] > lastVisible:
+               hasOpenSpans = typeof this.props.cats[cat].tasks[task].timespans[span][2] !== 'number') {
+              // ^ setting hasOpenSpans while passing the value it retains through to the if statement
 
-              // x of the start of the timespan
-              var startX = projectTime(task.timespans[span][1], taskListWidth, timeSpansWidth, now);
+              startX = projectTime(this.props.cats[cat].tasks[task].timespans[span][1], taskListWidth, timeSpansWidth, now);
               if(startX < taskListWidth) {
                 startX = taskListWidth;
               }
 
-              // x of the end of the timespan
-              var endX = task.timespans[span][2]? projectTime(task.timespans[span][2], taskListWidth, timeSpansWidth, now): taskListWidth + timeSpansWidth;
-              task.visibleTimespans.push([startX, endX]);
+              endX = this.props.cats[cat].tasks[task].timespans[span][2]? projectTime(this.props.cats[cat].tasks[task].timespans[span][2], taskListWidth, timeSpansWidth, now): taskListWidth + timeSpansWidth;
+              this.props.cats[cat].tasks[task].visibleTimespans.push([startX, endX]);
             }
           }
 
           // if no spans are open, total time obviously doesn't change
-          if(hasOpenSpans || !task.total) {
-            if(task.timespans.length > 0) {
-              task.total = sumSpans(task.timespans, now);
+          if(hasOpenSpans || !this.props.cats[cat].tasks[task].total) {
+            if(this.props.cats[cat].tasks[task].timespans.length > 0) {
+              this.props.cats[cat].tasks[task].total = sumSpans(this.props.cats[cat].tasks[task].timespans, now);
             } else {
-              task.total = 0;
+              this.props.cats[cat].tasks[task].total = 0;
             }
           }
 
-          if(task.total > Date.DAY) {
+          if(this.props.cats[cat].tasks[task].total > Date.DAY) {
             biggerNow = true;
           }
-
-          return task;
-        });
-
+        }
         if(this.props.cats[cat].tasks.length > 1) {
           this.props.cats[cat].total = this.props.cats[cat].tasks.reduce(function (a, b) {
             return typeof a !== 'number'? a.total + b.total: a + b.total;
