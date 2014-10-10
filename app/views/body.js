@@ -245,18 +245,8 @@ var TimeSpans = React.createClass({
   mixins: [React.addons.PureRenderMixin],
   render: function() {
     var displayList = [];
-    var right = this.props.x + this.props.width;
-    var startX = 0, endX = 0;
-
     for(span in this.props.timespans) {
-      startX = projectTime(this.props.timespans[span][1], this.props.x, this.props.width, this.props.now);
-      endX = this.props.timespans[span][2]? projectTime(this.props.timespans[span][2], this.props.x, this.props.width, this.props.now): this.props.x + this.props.width;
-
-      if(startX < this.props.x) {
-        startX = this.props.x;
-      }
-
-      displayList.push(React.DOM.rect({key: this.props.timespans[span], x: startX, y: this.props.y, width: endX - startX, height: this.props.height, opacity: this.props.opacity, fill: this.props.fill, onClick: this.props.onClick}));
+      displayList.push(React.DOM.rect({key: 's_' + span, x: this.props.timespans[span][0], y: this.props.y, width: this.props.timespans[span][1] - this.props.timespans[span][0], height: this.props.height, opacity: this.props.opacity, fill: this.props.fill, onClick: this.props.onClick}));
     }
     return React.DOM.g({}, null, displayList);
   }
@@ -334,7 +324,7 @@ var Task = React.createClass({
     displayList.push(new TaskEndColumn({key: 'c', total: this.props.task.total, y: this.props.y, started: this.props.task.started, right: this.props.right}));
 
     // Time spans
-    displayList.push(new TimeSpans({key: 'a', x: taskListWidth, y: this.props.y, height: taskHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans, now: this.props.now}));
+    displayList.push(new TimeSpans({key: 'a', y: this.props.y, height: taskHeight, fill: this.props.task.color, opacity: 1, timespans: this.props.task.visibleTimespans}));
 
     return React.DOM.g({}, null, displayList);
   }
@@ -420,7 +410,7 @@ var Category = React.createClass({
         }
       }
 
-      displayList.push(new TimeSpans({key: 's', x: taskListWidth, y: this.props.y, height: catHeight, width: (this.props.right - (nowLineOffset + taskListWidth)), fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded, now: this.props.now}));
+      displayList.push(new TimeSpans({key: 's', y: this.props.y, height: catHeight, fill: 'black', opacity: 0.05, timespans: timespans, onClick: this.toggleExpanded}));
     }
     this.props.y += catHeight;
 
@@ -451,6 +441,7 @@ var TaskList = React.createClass({
     var lastVisible = lastVisibleInstant(this.props.width - (nowLineOffset + taskListWidth), this.props.now);
     var now = this.props.now;
 
+    var timeSpansWidth = (this.props.width - (nowLineOffset + taskListWidth));
     for (cat in this.props.cats) {
       this.props.cats[cat].total = 0;
       if(this.props.cats[cat].tasks && this.props.cats[cat].tasks.length > 0) {
@@ -458,11 +449,22 @@ var TaskList = React.createClass({
           task.visibleTimespans = [];
           var hasOpenSpans = false;
           for(span in task.timespans) {
-            if(task.timespans[span][2]?task.timespans[span][2] > lastVisible: hasOpenSpans = task.timespans[span][2] === undefined) {
-              task.visibleTimespans.push(task.timespans[span]);
+            if(task.timespans[span][2]?task.timespans[span][2] > lastVisible: hasOpenSpans = typeof task.timespans[span][2] !== 'number') {
+              // WARNING: cleverness detected                                 ^ setting hasOpenSpans while passing the value it retains through to the if statement
+
+              // x of the start of the timespan
+              var startX = projectTime(task.timespans[span][1], taskListWidth, timeSpansWidth, now);
+              if(startX < taskListWidth) {
+                startX = taskListWidth;
+              }
+
+              // x of the end of the timespan
+              var endX = task.timespans[span][2]? projectTime(task.timespans[span][2], taskListWidth, timeSpansWidth, now): taskListWidth + timeSpansWidth;
+              task.visibleTimespans.push([startX, endX]);
             }
           }
 
+          // if no spans are open, total time obviously doesn't change
           if(hasOpenSpans || !task.total) {
             if(task.timespans.length > 0) {
               task.total = sumSpans(task.timespans, now);
