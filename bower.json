@@ -12,6 +12,7 @@
   "private": true,
   "dependencies": {
     "react": "~0.11.x",
-    "q": "~2.0.2"
+    "q": "~2.0.x",
+    "pleasejs": "~0.3.x"
   }
 }
